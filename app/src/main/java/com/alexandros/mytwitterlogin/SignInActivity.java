@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.alexandros.mytwitterlogin.Database.Entities.TwitterUser;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -26,6 +26,7 @@ public class SignInActivity extends AppCompatActivity {
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
 
     String loggedInTwitterUserScreenName;
+
 
 
     TextView userIdTextView;
@@ -130,6 +131,7 @@ public class SignInActivity extends AppCompatActivity {
 
 
                                         loggedInTwitterUserScreenName = authResult.getAdditionalUserInfo().getUsername();
+
 
                                     }catch (Exception e){
                                         e.printStackTrace();

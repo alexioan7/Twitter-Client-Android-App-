@@ -13,15 +13,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.alexandros.mytwitterlogin.Database.AppDatabase;
-import com.alexandros.mytwitterlogin.Database.Entities.Follower;
-import com.alexandros.mytwitterlogin.Database.Entities.TwitterUser;
 import com.alexandros.mytwitterlogin.RESTclientServices.response.FollowersResponse;
 import com.alexandros.mytwitterlogin.RESTclientServices.response.FriendsResponse;
 import com.alexandros.mytwitterlogin.RESTclientServices.response.HomeTimelineResponse;
 import com.alexandros.mytwitterlogin.RESTclientServices.response.LikesResponse;
 import com.alexandros.mytwitterlogin.RESTclientServices.TwitterClientService;
-import com.alexandros.mytwitterlogin.RESTclientServices.response.ShowUserResponse;
 import com.alexandros.mytwitterlogin.RESTclientServices.response.User;
 
 
@@ -35,7 +31,7 @@ public class DownloadActivity extends AppCompatActivity {
     List<HomeTimelineResponse> homeTimelineList;
     List<LikesResponse> listOfLikes;
     String loggedInTwitterUserScreenName;
-    Long loggedInTwitterUserId;
+
 
 
     private static final String TAG = "DownloadActivity";
@@ -89,35 +85,9 @@ public class DownloadActivity extends AppCompatActivity {
 
 
 
-        //creating the database and clearing all users
-        try{
-
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    AppDatabase db = AppDatabase.getInstance(getApplicationContext());
-                    db.twitterUseDao().deleteAll();
-
-                    db.followerDao().deleteAll();
-
-                }
-            }).start();
-
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-
-
-
-
-
         //Methods for displaying in Logcat
 
-        try {
-            getLoggedInUser();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+
         try{
             getFollowers();
         }catch (Exception e){
@@ -143,57 +113,12 @@ public class DownloadActivity extends AppCompatActivity {
     }
 
 
-    public void insertIntoDatabase(int i, User aUser, User aFollower, User aFriend){
-
-        try{
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    AppDatabase db = AppDatabase.getInstance(getApplicationContext());
-
-                    TwitterUser user = new TwitterUser();
-                    Follower follower = new Follower();
-                    Follower friend = new Follower();
-
-                    user.setDescription(aUser.getDescription());
-                    user.setName(aUser.getName());
-                    user.setScreenName(aUser.getScreenName());
-                    user.setTwitterUserId(aUser.getId());
-                    db.twitterUseDao().insert(user);
-
-                    if(aFollower != null){
-                        follower.setTwitterUserId(loggedInTwitterUserId);
-                        follower.setFollowerId(aFollower.getId());
-                        db.followerDao().insert(follower);
-                    }
-
-                    if(aFriend != null){
-                        friend.setFollowerId(loggedInTwitterUserId);
-                        friend.setTwitterUserId(aFriend.getId());
-                        db.followerDao().insert(friend);
-                    }
-
-
-
-
-
-                }
-            }).start();
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-
-    }
-
-
-
-
 
 
     // Function for getting the followers of a user
     private void getFollowers(){
 
-        Call<FollowersResponse> call = twitterClientService.getFollowers("false", "true");
+        Call<FollowersResponse> call = twitterClientService.getFollowers("200","false", "true");
         call.enqueue(new Callback<FollowersResponse>() {
             @Override
             public void onResponse(Call<FollowersResponse> call, retrofit2.Response<FollowersResponse> response) {
@@ -211,16 +136,6 @@ public class DownloadActivity extends AppCompatActivity {
                     Log.d(TAG, "onResponse: followerUsername  " + i + "is :" + followerList.get(i).getName() + " has friends :" +
                             + followerList.get(i).getFriendsCount()+ " has followers :" + followerList.get(i).getFollowersCount());
                 }
-
-
-                        for(int i = 0; i < followerList.size(); i++){
-                            User aUser = followerList.get(i);
-                            User aFollower =  followerList.get(i);
-                            User afriend = null;
-
-                            insertIntoDatabase(i, aUser, aFollower, afriend);
-                        }
-
 
 
             }
@@ -246,19 +161,6 @@ public class DownloadActivity extends AppCompatActivity {
                 FriendsResponse jsonFriendsResponse = response.body();
                 assert jsonFriendsResponse != null;
                 friendList = jsonFriendsResponse.getUsers();
-
-
-
-                            for(int i = 0; i < friendList.size(); i++){
-                                User aUser = friendList.get(i);
-                                User afriend = friendList.get(i);
-                                User afollower = null;
-                                insertIntoDatabase(i, aUser, afollower,  afriend);
-                            }
-
-
-
-
 
 
 
@@ -329,64 +231,6 @@ public class DownloadActivity extends AppCompatActivity {
             }
         });
     }
-
-    public void getLoggedInUser(){
-        Call<ShowUserResponse> call = twitterClientService.getLoggedInUser(loggedInTwitterUserScreenName, "false", "true");
-        call.enqueue(new Callback<ShowUserResponse>() {
-            @Override
-            public void onResponse(Call<ShowUserResponse> call, Response<ShowUserResponse> response) {
-                if (!response.isSuccessful()) {
-                    Log.e("Code:", String.valueOf(response.code()));
-                    return;
-                }
-
-                ShowUserResponse jsonShowUserResponse = response.body();
-                assert jsonShowUserResponse != null;
-
-
-                try {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            AppDatabase db = AppDatabase.getInstance(getApplicationContext());
-
-
-                            ShowUserResponse loggedInUser = jsonShowUserResponse;
-
-
-                            loggedInTwitterUserId = loggedInUser.getId();
-
-                            TwitterUser user = new TwitterUser();
-
-                            user.setDescription(loggedInUser.getDescription());
-                            user.setName(loggedInUser.getName());
-                            user.setScreenName(loggedInUser.getScreenName());
-                            user.setTwitterUserId(loggedInUser.getId());
-
-                            db.twitterUseDao().insert(user);
-
-                            Log.i("comes from loggedin db", db.twitterUseDao().getAllTwitterUsers().toString());
-                            Log.i("counted rows from db", String.valueOf(db.twitterUseDao().getCount()));
-
-                        }
-                    }).start();
-
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-
-
-
-
-            }
-
-            @Override
-            public void onFailure(Call<ShowUserResponse> call, Throwable t) {
-                Log.d("Error", t.getMessage());
-            }
-        });
-    }
-
 
 }
 

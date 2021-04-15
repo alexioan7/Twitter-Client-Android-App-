@@ -5,7 +5,6 @@ import com.alexandros.mytwitterlogin.RESTclientServices.response.FollowersRespon
 import com.alexandros.mytwitterlogin.RESTclientServices.response.FriendsResponse;
 import com.alexandros.mytwitterlogin.RESTclientServices.response.HomeTimelineResponse;
 import com.alexandros.mytwitterlogin.RESTclientServices.response.LikesResponse;
-import com.alexandros.mytwitterlogin.RESTclientServices.response.ShowUserResponse;
 
 import java.util.List;
 
@@ -17,7 +16,7 @@ public interface TwitterClientService {
 
 
     @GET("followers/list.json")
-    Call<FollowersResponse> getFollowers(@Query("include_user_entities") String s, @Query("skip_status") String status);
+    Call<FollowersResponse> getFollowers(@Query("count") String n, @Query("include_user_entities") String s, @Query("skip_status") String status);
 
     @GET("friends/list.json")
     Call<FriendsResponse> getFriends(@Query("count") String n, @Query("include_user_entities") String s, @Query("skip_status") String status);
@@ -30,8 +29,6 @@ public interface TwitterClientService {
     @GET("favorites/list.json")
     Call<List<LikesResponse>> getLikes(@Query("count") String n, @Query("include_entities") String s);
 
-    @GET("users/show.json")
-    Call<ShowUserResponse> getLoggedInUser(@Query("screen_name") String screenName, @Query("include_entities") String s, @Query("skip_status") String status);
 
 
 
