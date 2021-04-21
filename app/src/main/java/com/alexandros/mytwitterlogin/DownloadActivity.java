@@ -1,6 +1,8 @@
 package com.alexandros.mytwitterlogin;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -13,14 +15,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.alexandros.mytwitterlogin.RESTclientServices.response.FollowersResponse;
-import com.alexandros.mytwitterlogin.RESTclientServices.response.FriendsResponse;
-import com.alexandros.mytwitterlogin.RESTclientServices.response.HomeTimelineResponse;
-import com.alexandros.mytwitterlogin.RESTclientServices.response.LikesResponse;
-import com.alexandros.mytwitterlogin.RESTclientServices.TwitterClientService;
-import com.alexandros.mytwitterlogin.RESTclientServices.response.User;
+import com.alexandros.mytwitterlogin.RESTApi.response.FollowersResponse;
+import com.alexandros.mytwitterlogin.RESTApi.response.FriendsResponse;
+import com.alexandros.mytwitterlogin.RESTApi.response.HomeTimelineResponse;
+import com.alexandros.mytwitterlogin.RESTApi.response.LikesResponse;
+import com.alexandros.mytwitterlogin.RESTApi.TwitterClientService;
+import com.alexandros.mytwitterlogin.RESTApi.response.User;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -31,6 +34,12 @@ public class DownloadActivity extends AppCompatActivity {
     List<HomeTimelineResponse> homeTimelineList;
     List<LikesResponse> listOfLikes;
     String loggedInTwitterUserScreenName;
+
+
+    //RecyclerView
+    private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
 
 
 
@@ -53,6 +62,29 @@ public class DownloadActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_download);
+
+
+        //Example for the recyclerview
+        //ArrayList<CardViewItem> exampleList = new ArrayList<>();
+
+        /*
+        exampleList.add(new CardViewItem("line 1"));
+        exampleList.add(new CardViewItem("line 2"));
+        exampleList.add(new CardViewItem("line 3"));
+        */
+
+        mRecyclerView = findViewById(R.id.recyclerView);
+        mRecyclerView.setHasFixedSize(true);
+        mLayoutManager = new LinearLayoutManager(this);
+
+
+        /*
+        mAdapter = new Adapter(exampleList);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setAdapter(mAdapter);
+
+         */
+
 
 
         String consumer = getString(R.string.app_name);
@@ -131,11 +163,28 @@ public class DownloadActivity extends AppCompatActivity {
                 assert jsonResponse != null;
                 followerList = jsonResponse.getUsers();
 
+
+                // display on recyclerview
+
+                ArrayList<CardViewItem> cardViewList = new ArrayList<>();
+
+
+
+
+
                 //Display on Logcat the followers list
                 for (int i = 0; i < followerList.size(); i++) {
                     Log.d(TAG, "onResponse: followerUsername  " + i + "is :" + followerList.get(i).getName() + " has friends :" +
                             + followerList.get(i).getFriendsCount()+ " has followers :" + followerList.get(i).getFollowersCount());
+
+                    String followerName = followerList.get(i).getName();
+
+                    cardViewList.add(new CardViewItem(followerName));
                 }
+
+                mAdapter = new Adapter(cardViewList);
+                mRecyclerView.setLayoutManager(mLayoutManager);
+                mRecyclerView.setAdapter(mAdapter);
 
 
             }

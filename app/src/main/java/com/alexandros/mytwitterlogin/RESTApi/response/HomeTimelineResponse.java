@@ -1,9 +1,9 @@
-package com.alexandros.mytwitterlogin.RESTclientServices.response;
+package com.alexandros.mytwitterlogin.RESTApi.response;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class LikesResponse {
+public class HomeTimelineResponse {
 
     @SerializedName("created_at")
     @Expose
@@ -71,9 +71,13 @@ public class LikesResponse {
     @SerializedName("possibly_sensitive")
     @Expose
     private Boolean possiblySensitive;
+    @SerializedName("possibly_sensitive_appealable")
+    @Expose
+    private Boolean possiblySensitiveAppealable;
     @SerializedName("lang")
     @Expose
     private String lang;
+
 
     public String getCreatedAt() {
         return createdAt;
@@ -251,6 +255,14 @@ public class LikesResponse {
         this.possiblySensitive = possiblySensitive;
     }
 
+    public Boolean getPossiblySensitiveAppealable() {
+        return possiblySensitiveAppealable;
+    }
+
+    public void setPossiblySensitiveAppealable(Boolean possiblySensitiveAppealable) {
+        this.possiblySensitiveAppealable = possiblySensitiveAppealable;
+    }
+
     public String getLang() {
         return lang;
     }
@@ -258,5 +270,7 @@ public class LikesResponse {
     public void setLang(String lang) {
         this.lang = lang;
     }
+
+
 
 }

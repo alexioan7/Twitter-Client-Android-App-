@@ -1,4 +1,4 @@
-package com.alexandros.mytwitterlogin.RESTclientServices.response;
+package com.alexandros.mytwitterlogin.RESTApi.response;
 
 
     import com.google.gson.annotations.Expose;

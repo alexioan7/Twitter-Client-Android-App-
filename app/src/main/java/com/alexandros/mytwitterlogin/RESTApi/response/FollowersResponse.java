@@ -1,17 +1,18 @@
-package com.alexandros.mytwitterlogin.RESTclientServices.response;
-import java.util.List;
+package com.alexandros.mytwitterlogin.RESTApi.response;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class FriendsResponse {
+import java.util.List;
+
+public class FollowersResponse {
 
     @SerializedName("users")
     @Expose
     private List<User> users = null;
     @SerializedName("next_cursor")
     @Expose
-    private Long nextCursor;
+    private Integer nextCursor;
     @SerializedName("next_cursor_str")
     @Expose
     private String nextCursorStr;
@@ -33,11 +34,11 @@ public class FriendsResponse {
         this.users = users;
     }
 
-    public Long getNextCursor() {
+    public Integer getNextCursor() {
         return nextCursor;
     }
 
-    public void setNextCursor(Long nextCursor) {
+    public void setNextCursor(Integer nextCursor) {
         this.nextCursor = nextCursor;
     }
 

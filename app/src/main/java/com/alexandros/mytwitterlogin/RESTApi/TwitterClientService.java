@@ -1,10 +1,10 @@
-package com.alexandros.mytwitterlogin.RESTclientServices;
+package com.alexandros.mytwitterlogin.RESTApi;
 
 
-import com.alexandros.mytwitterlogin.RESTclientServices.response.FollowersResponse;
-import com.alexandros.mytwitterlogin.RESTclientServices.response.FriendsResponse;
-import com.alexandros.mytwitterlogin.RESTclientServices.response.HomeTimelineResponse;
-import com.alexandros.mytwitterlogin.RESTclientServices.response.LikesResponse;
+import com.alexandros.mytwitterlogin.RESTApi.response.FollowersResponse;
+import com.alexandros.mytwitterlogin.RESTApi.response.FriendsResponse;
+import com.alexandros.mytwitterlogin.RESTApi.response.HomeTimelineResponse;
+import com.alexandros.mytwitterlogin.RESTApi.response.LikesResponse;
 
 import java.util.List;
 
