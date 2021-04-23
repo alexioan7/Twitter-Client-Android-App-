@@ -1,8 +1,12 @@
 package com.alexandros.mytwitterlogin;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -21,6 +25,7 @@ import com.alexandros.mytwitterlogin.RESTApi.response.HomeTimelineResponse;
 import com.alexandros.mytwitterlogin.RESTApi.response.LikesResponse;
 import com.alexandros.mytwitterlogin.RESTApi.TwitterClientService;
 import com.alexandros.mytwitterlogin.RESTApi.response.User;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 
 import java.util.ArrayList;
@@ -34,10 +39,11 @@ public class DownloadActivity extends AppCompatActivity {
     List<HomeTimelineResponse> homeTimelineList;
     List<LikesResponse> listOfLikes;
     String loggedInTwitterUserScreenName;
+    ArrayList<Fragment> fragments = new ArrayList<>();
 
 
     //RecyclerView
-    private RecyclerView mRecyclerView;
+    private ViewPager2 mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
@@ -64,26 +70,36 @@ public class DownloadActivity extends AppCompatActivity {
         setContentView(R.layout.activity_download);
 
 
-        //Example for the recyclerview
-        //ArrayList<CardViewItem> exampleList = new ArrayList<>();
+        mRecyclerView = findViewById(R.id.view_pager);
 
-        /*
-        exampleList.add(new CardViewItem("line 1"));
-        exampleList.add(new CardViewItem("line 2"));
-        exampleList.add(new CardViewItem("line 3"));
-        */
+        fragments.add(new FollowersFragment());
 
-        mRecyclerView = findViewById(R.id.recyclerView);
-        mRecyclerView.setHasFixedSize(true);
-        mLayoutManager = new LinearLayoutManager(this);
+        fragments.add(new FriendsFragment());
+
+        fragments.add(new HomeTimelineFragment());
+
+        fragments.add(new LikesFragment());
+
+        FragmentStateAdapter stateAdapter = new FragmentsHostAdapter(this.getSupportFragmentManager(),getLifecycle(),fragments);
+        mRecyclerView.setAdapter(stateAdapter);
+        new TabLayoutMediator(findViewById(R.id.tab_layout), findViewById(R.id.view_pager), true, (((tab, position) -> {
+            switch (position){
+                case 0:
+                    tab.setText("followers");
+                    break;
+                case 1:
+                    tab.setText("friends");
+                    break;
+                case 2:
+                    tab.setText("home timeline");
+                    break;
+                case 3:
+                    tab.setText("likes");
+                    break;
+            }
+        }))).attach();
 
 
-        /*
-        mAdapter = new Adapter(exampleList);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setAdapter(mAdapter);
-
-         */
 
 
 
@@ -114,173 +130,7 @@ public class DownloadActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-
-
-
-        //Methods for displaying in Logcat
-
-
-        try{
-            getFollowers();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        try{
-            getFriends();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        try{
-            getHomeTimeline();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        try{
-            getLikes();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-
-
     }
-
-
-
-
-    // Function for getting the followers of a user
-    private void getFollowers(){
-
-        Call<FollowersResponse> call = twitterClientService.getFollowers("200","false", "true");
-        call.enqueue(new Callback<FollowersResponse>() {
-            @Override
-            public void onResponse(Call<FollowersResponse> call, retrofit2.Response<FollowersResponse> response) {
-                if (!response.isSuccessful()){
-                    Log.e("Code:", String.valueOf(response.code()));
-                    return;
-                }
-
-                FollowersResponse jsonResponse = response.body();
-                assert jsonResponse != null;
-                followerList = jsonResponse.getUsers();
-
-
-                // display on recyclerview
-
-                ArrayList<CardViewItem> cardViewList = new ArrayList<>();
-
-
-
-
-
-                //Display on Logcat the followers list
-                for (int i = 0; i < followerList.size(); i++) {
-                    Log.d(TAG, "onResponse: followerUsername  " + i + "is :" + followerList.get(i).getName() + " has friends :" +
-                            + followerList.get(i).getFriendsCount()+ " has followers :" + followerList.get(i).getFollowersCount());
-
-                    String followerName = followerList.get(i).getName();
-
-                    cardViewList.add(new CardViewItem(followerName));
-                }
-
-                mAdapter = new Adapter(cardViewList);
-                mRecyclerView.setLayoutManager(mLayoutManager);
-                mRecyclerView.setAdapter(mAdapter);
-
-
-            }
-            @Override
-            public void onFailure(Call<FollowersResponse> call, Throwable t) {
-                Log.d("Error", t.getMessage());
-
-            }
-        });
-    }
-
-    private void getFriends(){
-
-        Call<FriendsResponse> call = twitterClientService.getFriends("200", "false", "true");
-        call.enqueue(new Callback<FriendsResponse>() {
-            @Override
-            public void onResponse(Call<FriendsResponse> call, Response<FriendsResponse> response) {
-                if (!response.isSuccessful()){
-                    Log.e("Code:", String.valueOf(+ response.code()));
-                    return;
-                }
-
-                FriendsResponse jsonFriendsResponse = response.body();
-                assert jsonFriendsResponse != null;
-                friendList = jsonFriendsResponse.getUsers();
-
-
-
-
-                //Display on Logcat the friends list
-                for (int i =0; i < friendList.size(); i++) {
-                    Log.d(TAG, "onResponse: friendUsername  " + i + "is :" + friendList.get(i).getName() +
-                            " has friends : " + friendList.get(i).getFriendsCount()+ " has followers :" + friendList.get(i).getFollowersCount());
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<FriendsResponse> call, Throwable t) {
-                Log.d("Error", t.getMessage());
-
-            }
-        });
-
-    }
-
-
-    private void getHomeTimeline() {
-        Call<List<HomeTimelineResponse>> call = twitterClientService.getHomeTimeline("10", "false", "true");
-        call.enqueue(new Callback<List<HomeTimelineResponse>>() {
-            @Override
-            public void onResponse(Call<List<HomeTimelineResponse>> call, Response<List<HomeTimelineResponse>> response) {
-                if (!response.isSuccessful()) {
-                    Log.e("Code:", String.valueOf(response.code()));
-                    return;
-                }
-
-                assert response.body() != null;
-                homeTimelineList = response.body();
-                for (int i = 0; i < homeTimelineList.size(); i++) {
-                    Log.d(TAG, "onResponse: homeTimeLineText is :" + homeTimelineList.get(i).getText());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<HomeTimelineResponse>> call, Throwable t) {
-                Log.d("Error", t.getMessage());
-            }
-        });
-
-    }
-
-    private void getLikes(){
-        Call<List<LikesResponse>> call = twitterClientService.getLikes("10", "false");
-        call.enqueue(new Callback<List<LikesResponse>>() {
-            @Override
-            public void onResponse(Call<List<LikesResponse>> call, Response<List<LikesResponse>> response) {
-                if (!response.isSuccessful()) {
-                    Log.e("Code:", String.valueOf(response.code()));
-                    return;
-                }
-                assert response.body() != null;
-                listOfLikes = response.body();
-                for(int i=0; i < listOfLikes.size(); i++){
-                    Log.d(TAG, "onResponse: listOfLikes is" + listOfLikes.get(i).getText());
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<List<LikesResponse>> call, Throwable t) {
-                Log.d("Error", t.getMessage());
-            }
-        });
-    }
-
 }
 
 
