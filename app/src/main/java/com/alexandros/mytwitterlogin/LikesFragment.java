@@ -38,27 +38,18 @@ public class LikesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-
-
         View view = inflater.inflate(R.layout.fragment_likes, container, false);
-
 
         mRecyclerView = Objects.requireNonNull(view).findViewById(R.id.likes_rv);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this.getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-
-
         String accessToken = requireActivity().getIntent().getExtras().getString("accessToken");
         String accessTokenSecret = requireActivity().getIntent().getExtras().getString("accessTokenSecret");
 
-
         RetrofitInstance retrofitInstance = RetrofitInstance.getRetrofitInstance(accessToken,accessTokenSecret);
-        twitterClientService =retrofitInstance.getTwitterClientService();
-
-
-
+        twitterClientService = retrofitInstance.getTwitterClientService();
 
         try{
             getLikes();;
@@ -75,10 +66,6 @@ public class LikesFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-
-
-
     }
 
 
@@ -99,8 +86,6 @@ public class LikesFragment extends Fragment {
                 // display on recyclerview
                 ArrayList<CardViewItem> cardViewList = new ArrayList<>();
 
-
-
                 for(int i=0; i < listOfLikes.size(); i++){
                     String like = listOfLikes.get(i).getText();
                     cardViewList.add(new CardViewItem(like));
@@ -117,6 +102,4 @@ public class LikesFragment extends Fragment {
             }
         });
     }
-
-
 }
