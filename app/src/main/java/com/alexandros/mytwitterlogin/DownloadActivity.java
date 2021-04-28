@@ -1,26 +1,16 @@
 package com.alexandros.mytwitterlogin;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
-import okhttp3.OkHttpClient;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
-import com.alexandros.mytwitterlogin.RESTApi.response.FollowersResponse;
-import com.alexandros.mytwitterlogin.RESTApi.response.FriendsResponse;
+import com.alexandros.mytwitterlogin.RESTApi.Oauth1SigningInterceptor;
 import com.alexandros.mytwitterlogin.RESTApi.response.HomeTimelineResponse;
 import com.alexandros.mytwitterlogin.RESTApi.response.LikesResponse;
 import com.alexandros.mytwitterlogin.RESTApi.TwitterClientService;
@@ -52,9 +42,6 @@ public class DownloadActivity extends AppCompatActivity {
     private static final String TAG = "DownloadActivity";
 
 
-    Oauth1SigningInterceptor.Clock clock = new Oauth1SigningInterceptor.Clock();
-    Random random = new Random();
-
     private TwitterClientService twitterClientService;
 
     private String accessToken;
@@ -69,15 +56,11 @@ public class DownloadActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_download);
 
-
         mRecyclerView = findViewById(R.id.view_pager);
 
         fragments.add(new FollowersFragment());
-
         fragments.add(new FriendsFragment());
-
         fragments.add(new HomeTimelineFragment());
-
         fragments.add(new LikesFragment());
 
         FragmentStateAdapter stateAdapter = new FragmentsHostAdapter(this.getSupportFragmentManager(),getLifecycle(),fragments);
@@ -99,15 +82,6 @@ public class DownloadActivity extends AppCompatActivity {
             }
         }))).attach();
 
-
-
-
-
-
-        Intent intent = getIntent();
-        accessToken = intent.getExtras().getString("accessToken");
-        accessTokenSecret = intent.getExtras().getString("accessTokenSecret");
-        loggedInTwitterUserScreenName = intent.getExtras().getString("loggedInTwitterUserScreenName");
     }
 }
 

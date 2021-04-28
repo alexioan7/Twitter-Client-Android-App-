@@ -1,4 +1,4 @@
-package com.alexandros.mytwitterlogin;
+package com.alexandros.mytwitterlogin.utils;
 
 
 /*
@@ -37,7 +37,7 @@ package com.alexandros.mytwitterlogin;
  * @author David Beaumont
  */
 
-final class UrlEscapeUtils {
+public final class UrlEscapeUtils {
     /** The amount of padding (chars) to use when growing the escape buffer. */
     private static final int DEST_PAD = 32;
 

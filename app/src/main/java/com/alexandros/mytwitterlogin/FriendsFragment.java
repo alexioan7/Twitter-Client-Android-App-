@@ -19,6 +19,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.alexandros.mytwitterlogin.RESTApi.Oauth1SigningInterceptor;
+import com.alexandros.mytwitterlogin.RESTApi.RetrofitInstance;
 import com.alexandros.mytwitterlogin.RESTApi.TwitterClientService;
 import com.alexandros.mytwitterlogin.RESTApi.response.FriendsResponse;
 import com.alexandros.mytwitterlogin.RESTApi.response.User;
@@ -38,11 +40,7 @@ public class FriendsFragment extends Fragment {
 
     private TwitterClientService twitterClientService;
 
-    private String consumerKey;
-    private String consumerSecret;
 
-    Oauth1SigningInterceptor.Clock clock = new Oauth1SigningInterceptor.Clock();
-    Random random = new Random();
 
 
     @Override
@@ -59,30 +57,12 @@ public class FriendsFragment extends Fragment {
         mRecyclerView.setLayoutManager(mLayoutManager);
 
 
-        consumerKey = "X49WPfKJ3lJixxzCVB8KuJK7z";
-        consumerSecret = "bqbzunS3mKqNMQCnnlv5e2T5RkLmw9Ckzs2XFWeBODSWXU49yC";
         String accessToken = requireActivity().getIntent().getExtras().getString("accessToken");
         String accessTokenSecret = requireActivity().getIntent().getExtras().getString("accessTokenSecret");
 
 
-        Oauth1SigningInterceptor myInterceptor = new Oauth1SigningInterceptor(consumerKey, consumerSecret, accessToken, accessTokenSecret, random, clock);
-
-        try {
-            OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                    .addNetworkInterceptor(myInterceptor)
-                    .build();
-
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("https://api.twitter.com/1.1/")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .client(okHttpClient)
-                    .build();
-
-            twitterClientService = retrofit.create(TwitterClientService.class);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        RetrofitInstance retrofitInstance = RetrofitInstance.getRetrofitInstance(accessToken,accessTokenSecret);
+        twitterClientService =retrofitInstance.getTwitterClientService();
 
 
         try{

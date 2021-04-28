@@ -1,6 +1,5 @@
-package com.alexandros.mytwitterlogin;
+package com.alexandros.mytwitterlogin.RESTApi;
 
-import com.alexandros.mytwitterlogin.RESTApi.TwitterClientService;
 import com.alexandros.mytwitterlogin.utils.Constants;
 
 import java.util.Random;

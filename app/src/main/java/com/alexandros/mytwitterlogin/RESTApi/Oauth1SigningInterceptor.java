@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package com.alexandros.mytwitterlogin;
+package com.alexandros.mytwitterlogin.RESTApi;
 
-import com.alexandros.mytwitterlogin.UrlEscapeUtils;
-
+import com.alexandros.mytwitterlogin.utils.UrlEscapeUtils;
 
 import java.io.IOException;
 import java.security.InvalidKeyException;
