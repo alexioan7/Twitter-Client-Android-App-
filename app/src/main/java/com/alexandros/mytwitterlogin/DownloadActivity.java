@@ -103,33 +103,11 @@ public class DownloadActivity extends AppCompatActivity {
 
 
 
-        String consumer = getString(R.string.app_name);
-        consumerKey = "X49WPfKJ3lJixxzCVB8KuJK7z";
-        consumerSecret = "bqbzunS3mKqNMQCnnlv5e2T5RkLmw9Ckzs2XFWeBODSWXU49yC";
+
         Intent intent = getIntent();
         accessToken = intent.getExtras().getString("accessToken");
         accessTokenSecret = intent.getExtras().getString("accessTokenSecret");
         loggedInTwitterUserScreenName = intent.getExtras().getString("loggedInTwitterUserScreenName");
-
-        Oauth1SigningInterceptor myInterceptor = new Oauth1SigningInterceptor(consumerKey,consumerSecret,accessToken,accessTokenSecret,random,clock);
-
-        try{
-            OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                    .addNetworkInterceptor(myInterceptor)
-                    .build();
-
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("https://api.twitter.com/1.1/")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .client(okHttpClient)
-                    .build();
-
-            twitterClientService = retrofit.create(TwitterClientService.class);
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-
     }
 }
 

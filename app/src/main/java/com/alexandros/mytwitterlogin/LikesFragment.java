@@ -30,22 +30,11 @@ import java.util.Random;
 
 
 public class LikesFragment extends Fragment {
-
     List<LikesResponse> listOfLikes;
-
     RecyclerView mRecyclerView;
     RecyclerView.LayoutManager mLayoutManager;
     private RecyclerView.Adapter mAdapter;
-
     private TwitterClientService twitterClientService;
-
-    private String consumerKey;
-    private String consumerSecret;
-
-    Oauth1SigningInterceptor.Clock clock = new Oauth1SigningInterceptor.Clock();
-    Random random = new Random();
-
-
 
 
 
@@ -64,30 +53,15 @@ public class LikesFragment extends Fragment {
         mRecyclerView.setLayoutManager(mLayoutManager);
 
 
-        consumerKey = "X49WPfKJ3lJixxzCVB8KuJK7z";
-        consumerSecret = "bqbzunS3mKqNMQCnnlv5e2T5RkLmw9Ckzs2XFWeBODSWXU49yC";
+
         String accessToken = requireActivity().getIntent().getExtras().getString("accessToken");
         String accessTokenSecret = requireActivity().getIntent().getExtras().getString("accessTokenSecret");
 
 
-        Oauth1SigningInterceptor myInterceptor = new Oauth1SigningInterceptor(consumerKey, consumerSecret, accessToken, accessTokenSecret, random, clock);
+        RetrofitInstance retrofitInstance = RetrofitInstance.getRetrofitInstance(accessToken,accessTokenSecret);
+        twitterClientService =retrofitInstance.getTwitterClientService();
 
-        try {
-            OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                    .addNetworkInterceptor(myInterceptor)
-                    .build();
 
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("https://api.twitter.com/1.1/")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .client(okHttpClient)
-                    .build();
-
-            twitterClientService = retrofit.create(TwitterClientService.class);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
 
         try{
@@ -132,7 +106,6 @@ public class LikesFragment extends Fragment {
 
 
                 for(int i=0; i < listOfLikes.size(); i++){
-
                     String like = listOfLikes.get(i).getText();
                     cardViewList.add(new CardViewItem(like));
                 }
