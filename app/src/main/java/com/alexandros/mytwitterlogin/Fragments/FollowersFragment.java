@@ -1,4 +1,4 @@
-package com.alexandros.mytwitterlogin;
+package com.alexandros.mytwitterlogin.Fragments;
 
 import android.os.Bundle;
 
@@ -18,6 +18,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.alexandros.mytwitterlogin.Adapter;
+import com.alexandros.mytwitterlogin.CardViewItem;
+import com.alexandros.mytwitterlogin.R;
 import com.alexandros.mytwitterlogin.RESTApi.Oauth1SigningInterceptor;
 import com.alexandros.mytwitterlogin.RESTApi.RetrofitInstance;
 import com.alexandros.mytwitterlogin.RESTApi.TwitterClientService;

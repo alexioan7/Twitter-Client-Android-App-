@@ -2,13 +2,16 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 
 android {
-    compileSdkVersion 28
+
+
+
+    compileSdkVersion 30
 
 
     defaultConfig {
         applicationId "com.alexandros.mytwitterlogin"
         minSdkVersion 23
-        targetSdkVersion 28
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
 
@@ -81,6 +84,9 @@ dependencies {
 //    implementation "androidx.room:room-guava:$room_version"
     // Test helpers
     testImplementation "androidx.room:room-testing:$room_version"
+
+
+
 }
 
     

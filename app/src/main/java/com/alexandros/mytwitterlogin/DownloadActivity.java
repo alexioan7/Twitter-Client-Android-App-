@@ -7,10 +7,12 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 
-import android.content.Intent;
 import android.os.Bundle;
 
-import com.alexandros.mytwitterlogin.RESTApi.Oauth1SigningInterceptor;
+import com.alexandros.mytwitterlogin.Fragments.FollowersFragment;
+import com.alexandros.mytwitterlogin.Fragments.FriendsFragment;
+import com.alexandros.mytwitterlogin.Fragments.HomeTimelineFragment;
+import com.alexandros.mytwitterlogin.Fragments.LikesFragment;
 import com.alexandros.mytwitterlogin.RESTApi.response.HomeTimelineResponse;
 import com.alexandros.mytwitterlogin.RESTApi.response.LikesResponse;
 import com.alexandros.mytwitterlogin.RESTApi.TwitterClientService;
@@ -20,7 +22,6 @@ import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 
 public class DownloadActivity extends AppCompatActivity {
