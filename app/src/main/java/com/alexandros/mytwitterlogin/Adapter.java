@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class Adapter extends RecyclerView.Adapter <Adapter.ExampleViewHolder>{
-    private ArrayList<CardViewItem> mExampleList;
+    private final ArrayList<CardViewItem> mExampleList;
 
     public static class ExampleViewHolder extends RecyclerView.ViewHolder{
         public TextView mTextView;
@@ -31,8 +31,7 @@ public class Adapter extends RecyclerView.Adapter <Adapter.ExampleViewHolder>{
     @Override
     public ExampleViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_item, parent, false);
-       ExampleViewHolder evh = new ExampleViewHolder(v);
-       return evh;
+        return new ExampleViewHolder(v);
     }
 
     @Override

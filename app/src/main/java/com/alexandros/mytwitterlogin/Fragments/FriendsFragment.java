@@ -1,20 +1,6 @@
 package com.alexandros.mytwitterlogin.Fragments;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import okhttp3.OkHttpClient;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,28 +8,26 @@ import android.view.ViewGroup;
 import com.alexandros.mytwitterlogin.Adapter;
 import com.alexandros.mytwitterlogin.CardViewItem;
 import com.alexandros.mytwitterlogin.R;
-import com.alexandros.mytwitterlogin.RESTApi.Oauth1SigningInterceptor;
-import com.alexandros.mytwitterlogin.RESTApi.RetrofitInstance;
-import com.alexandros.mytwitterlogin.RESTApi.TwitterClientService;
-import com.alexandros.mytwitterlogin.RESTApi.response.FriendsResponse;
-import com.alexandros.mytwitterlogin.RESTApi.response.User;
+import com.alexandros.mytwitterlogin.UserDataViewModel;
+import com.alexandros.mytwitterlogin.ViewModelFactory;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import java.util.Random;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 
 public class FriendsFragment extends Fragment {
-    List<User> friendList;
 
+    private UserDataViewModel userDataViewModel;
     RecyclerView mRecyclerView;
     RecyclerView.LayoutManager mLayoutManager;
-    private RecyclerView.Adapter mAdapter;
-
-    private TwitterClientService twitterClientService;
-
-
+    private Adapter mAdapter;
 
 
     @Override
@@ -64,15 +48,10 @@ public class FriendsFragment extends Fragment {
         String accessTokenSecret = requireActivity().getIntent().getExtras().getString("accessTokenSecret");
 
 
-        RetrofitInstance retrofitInstance = RetrofitInstance.getRetrofitInstance(accessToken,accessTokenSecret);
-        twitterClientService =retrofitInstance.getTwitterClientService();
+
+        userDataViewModel = new ViewModelProvider(requireActivity(),new ViewModelFactory(accessToken, accessTokenSecret)).get(UserDataViewModel.class);
 
 
-        try{
-            getFriends();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
 
 
         // Inflate the layout for this fragment
@@ -89,54 +68,18 @@ public class FriendsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
 
-
-
-    }
-
-
-
-
-
-
-    private void getFriends(){
-
-        Call<FriendsResponse> call = twitterClientService.getFriends("200", "false", "true");
-        call.enqueue(new Callback<FriendsResponse>() {
-            @Override
-            public void onResponse(Call<FriendsResponse> call, Response<FriendsResponse> response) {
-                if (!response.isSuccessful()){
-                    Log.e("Code:", String.valueOf(+ response.code()));
-                    return;
-                }
-
-                FriendsResponse jsonFriendsResponse = response.body();
-                assert jsonFriendsResponse != null;
-                friendList = jsonFriendsResponse.getUsers();
-
-                // display on recyclerview
-
-                ArrayList<CardViewItem> cardViewList = new ArrayList<>();
-
-
-                //Display on Logcat the friends list
-                for (int i =0; i < friendList.size(); i++) {
-
-                    String friendName = friendList.get(i).getName();
-
-                    cardViewList.add(new CardViewItem(friendName));
-                }
-
-                mAdapter = new Adapter(cardViewList);
+        userDataViewModel.getFriendsLive().observe(getViewLifecycleOwner(), cardViewItems -> {
+            if (cardViewItems != null) {
+                mAdapter = new Adapter((ArrayList<CardViewItem>) cardViewItems);
                 mRecyclerView.setAdapter(mAdapter);
             }
 
-            @Override
-            public void onFailure(Call<FriendsResponse> call, Throwable t) {
-                Log.d("Error", t.getMessage());
-
-            }
         });
 
+
     }
+
+
+
 
 }

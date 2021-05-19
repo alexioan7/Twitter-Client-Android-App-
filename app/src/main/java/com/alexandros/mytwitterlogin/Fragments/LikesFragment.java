@@ -1,17 +1,6 @@
 package com.alexandros.mytwitterlogin.Fragments;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,21 +8,26 @@ import android.view.ViewGroup;
 import com.alexandros.mytwitterlogin.Adapter;
 import com.alexandros.mytwitterlogin.CardViewItem;
 import com.alexandros.mytwitterlogin.R;
-import com.alexandros.mytwitterlogin.RESTApi.RetrofitInstance;
-import com.alexandros.mytwitterlogin.RESTApi.TwitterClientService;
-import com.alexandros.mytwitterlogin.RESTApi.response.LikesResponse;
+import com.alexandros.mytwitterlogin.UserDataViewModel;
+import com.alexandros.mytwitterlogin.ViewModelFactory;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 
 public class LikesFragment extends Fragment {
-    List<LikesResponse> listOfLikes;
+    private UserDataViewModel userDataViewModel;
+
     RecyclerView mRecyclerView;
     RecyclerView.LayoutManager mLayoutManager;
-    private RecyclerView.Adapter mAdapter;
-    private TwitterClientService twitterClientService;
+    private Adapter mAdapter;
 
 
 
@@ -51,58 +45,27 @@ public class LikesFragment extends Fragment {
         String accessToken = requireActivity().getIntent().getExtras().getString("accessToken");
         String accessTokenSecret = requireActivity().getIntent().getExtras().getString("accessTokenSecret");
 
-        RetrofitInstance retrofitInstance = RetrofitInstance.getRetrofitInstance(accessToken,accessTokenSecret);
-        twitterClientService = retrofitInstance.getTwitterClientService();
+        userDataViewModel = new ViewModelProvider(requireActivity(),new ViewModelFactory(accessToken, accessTokenSecret)).get(UserDataViewModel.class);
 
-        try{
-            getLikes();;
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+
 
         // Inflate the layout for this fragment
         return view;
     }
 
 
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-    }
 
 
-
-    private void getLikes(){
-        Call<List<LikesResponse>> call = twitterClientService.getLikes("10", "false");
-        call.enqueue(new Callback<List<LikesResponse>>() {
-            @Override
-            public void onResponse(Call<List<LikesResponse>> call, Response<List<LikesResponse>> response) {
-                if (!response.isSuccessful()) {
-                    Log.e("Code:", String.valueOf(response.code()));
-                    return;
-                }
-                assert response.body() != null;
-                listOfLikes = response.body();
-
-
-                // display on recyclerview
-                ArrayList<CardViewItem> cardViewList = new ArrayList<>();
-
-                for(int i=0; i < listOfLikes.size(); i++){
-                    String like = listOfLikes.get(i).getText();
-                    cardViewList.add(new CardViewItem(like));
-                }
-
-                mAdapter = new Adapter(cardViewList);
+        userDataViewModel.getLikesLive().observe(getViewLifecycleOwner(), cardViewItems -> {
+            if (cardViewItems != null) {
+                mAdapter = new Adapter((ArrayList<CardViewItem>) cardViewItems);
                 mRecyclerView.setAdapter(mAdapter);
-
             }
 
-            @Override
-            public void onFailure(Call<List<LikesResponse>> call, Throwable t) {
-                Log.d("Error", t.getMessage());
-            }
         });
     }
+
 }
