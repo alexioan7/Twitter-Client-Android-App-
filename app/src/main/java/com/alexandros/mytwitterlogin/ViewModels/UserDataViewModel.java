@@ -1,4 +1,9 @@
-package com.alexandros.mytwitterlogin;
+package com.alexandros.mytwitterlogin.ViewModels;
+
+import android.content.Context;
+
+import com.alexandros.mytwitterlogin.CardViewItem;
+import com.alexandros.mytwitterlogin.Repositories.Repository;
 
 import java.util.List;
 
@@ -13,7 +18,7 @@ public class UserDataViewModel extends ViewModel {
 
 
 
-    public  UserDataViewModel(String accessToken,String accessTokenSecret) {
+    public  UserDataViewModel(String accessToken, String accessTokenSecret) {
 
         repository = Repository.getInstance(accessToken,accessTokenSecret);
         repository.getFollowers();

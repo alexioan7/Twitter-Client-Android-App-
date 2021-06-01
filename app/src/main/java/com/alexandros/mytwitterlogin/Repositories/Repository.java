@@ -1,7 +1,11 @@
-package com.alexandros.mytwitterlogin;
-
+package com.alexandros.mytwitterlogin.Repositories;
 import android.util.Log;
 
+import com.alexandros.mytwitterlogin.CardViewItem;
+import com.alexandros.mytwitterlogin.Database.DAOs.FollowerDao;
+import com.alexandros.mytwitterlogin.Database.DAOs.FriendDao;
+import com.alexandros.mytwitterlogin.Database.DAOs.HomeTimelineDao;
+import com.alexandros.mytwitterlogin.Database.DAOs.LikeDao;
 import com.alexandros.mytwitterlogin.RESTApi.RetrofitInstance;
 import com.alexandros.mytwitterlogin.RESTApi.TwitterClientService;
 import com.alexandros.mytwitterlogin.RESTApi.response.FollowersResponse;
@@ -27,6 +31,11 @@ public class Repository {
     List<HomeTimelineResponse> homeTimelineList;
     List<LikesResponse> listOfLikes;
 
+    private LikeDao likeDao;
+    private HomeTimelineDao homeTimelineDao;
+    private FollowerDao followerDao;
+    private FriendDao friendDao;
+
     TwitterClientService twitterClientService;
     private static volatile Repository repositoryInstance;
 
@@ -46,6 +55,19 @@ public class Repository {
         }
         return repositoryInstance;
     }
+
+
+    /*
+    public Repository(Application application){
+        MyDatabase db = MyDatabase.getInstance(application);
+        friendDao = db.friendDao();
+        followerDao = db.followerDao();
+        homeTimelineDao = db.homeTimelineDao();
+        likeDao = db.likeDao();
+    }
+    */
+
+
 
     public LiveData<List<CardViewItem>> getFollowersLive() {
         return mutableLiveDataFollowers;
@@ -83,12 +105,12 @@ public class Repository {
 
                 ArrayList<CardViewItem> cardViewList = new ArrayList<>();
 
-                //Display on Logcat the followers list
                 for (int i = 0; i < followerList.size(); i++) {
 
                     String followerName = followerList.get(i).getName();
 
                     cardViewList.add(new CardViewItem(followerName));
+
                 }
                 Log.d("CardViewList size: ", "onResponse: "+cardViewList.size());
 
@@ -119,11 +141,9 @@ public class Repository {
                 friendList = jsonFriendsResponse.getUsers();
 
                 // display on recyclerview
-
                 ArrayList<CardViewItem> cardViewList = new ArrayList<>();
 
 
-                //Display on Logcat the friends list
                 for (int i =0; i < friendList.size(); i++) {
 
                     String friendName = friendList.get(i).getName();
@@ -162,9 +182,6 @@ public class Repository {
                 for (int i = 0; i < homeTimelineList.size(); i++) {
 
                     String homeTimeline = homeTimelineList.get(i).getText();
-
-                    Log.d("text from log timeline", homeTimeline);
-
                     cardViewList.add(new CardViewItem(homeTimeline));
 
                 }

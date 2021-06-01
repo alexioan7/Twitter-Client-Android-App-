@@ -13,8 +13,8 @@ import android.view.ViewGroup;
 import com.alexandros.mytwitterlogin.Adapter;
 import com.alexandros.mytwitterlogin.CardViewItem;
 import com.alexandros.mytwitterlogin.R;
-import com.alexandros.mytwitterlogin.UserDataViewModel;
-import com.alexandros.mytwitterlogin.ViewModelFactory;
+import com.alexandros.mytwitterlogin.ViewModels.UserDataViewModel;
+import com.alexandros.mytwitterlogin.ViewModels.ViewModelFactory;
 
 import java.util.ArrayList;
 import java.util.Objects;

@@ -1,5 +1,7 @@
-package com.alexandros.mytwitterlogin;
+package com.alexandros.mytwitterlogin.ViewModels;
 
+
+import com.alexandros.mytwitterlogin.ViewModels.UserDataViewModel;
 
 import java.util.Objects;
 
