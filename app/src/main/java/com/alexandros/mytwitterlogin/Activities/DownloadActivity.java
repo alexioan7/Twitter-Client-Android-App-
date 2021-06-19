@@ -1,4 +1,4 @@
-package com.alexandros.mytwitterlogin;
+package com.alexandros.mytwitterlogin.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -10,9 +10,11 @@ import androidx.viewpager2.widget.ViewPager2;
 import android.os.Bundle;
 
 import com.alexandros.mytwitterlogin.Fragments.FollowersFragment;
+import com.alexandros.mytwitterlogin.Adapters.FragmentsHostAdapter;
 import com.alexandros.mytwitterlogin.Fragments.FriendsFragment;
 import com.alexandros.mytwitterlogin.Fragments.HomeTimelineFragment;
 import com.alexandros.mytwitterlogin.Fragments.LikesFragment;
+import com.alexandros.mytwitterlogin.R;
 import com.alexandros.mytwitterlogin.RESTApi.response.HomeTimelineResponse;
 import com.alexandros.mytwitterlogin.RESTApi.response.LikesResponse;
 import com.alexandros.mytwitterlogin.RESTApi.TwitterClientService;

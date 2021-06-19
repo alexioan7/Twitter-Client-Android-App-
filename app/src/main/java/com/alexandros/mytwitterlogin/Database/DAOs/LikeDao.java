@@ -1,6 +1,8 @@
 package com.alexandros.mytwitterlogin.Database.DAOs;
 
-import com.alexandros.mytwitterlogin.RESTApi.response.LikesResponse;
+
+import com.alexandros.mytwitterlogin.Database.Entities.Like;
+
 
 import java.util.List;
 
@@ -15,19 +17,24 @@ import androidx.room.Update;
 public interface LikeDao {
 
     @Insert
-    void insert(LikesResponse liked_tweet);
+    void insert(Like liked_tweet);
 
     @Update
-    void update(LikesResponse liked_tweet);
+    void update(Like liked_tweet);
 
     @Delete
-    void delete(LikesResponse liked_tweet);
+    void delete(Like liked_tweet);
+
 
     @Query("DELETE FROM like_table")
     void deleteAllLikes();
 
     @Query("SELECT* FROM like_table")
-    LiveData<List<LikesResponse>> getAllLikesFromDB();
+    LiveData<List<Like>> getAllLikesFromDB();
+
+
+
+
 
 
 }

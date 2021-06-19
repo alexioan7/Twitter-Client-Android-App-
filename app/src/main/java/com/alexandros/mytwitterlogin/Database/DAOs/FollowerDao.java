@@ -1,6 +1,7 @@
 package com.alexandros.mytwitterlogin.Database.DAOs;
 
-import com.alexandros.mytwitterlogin.RESTApi.response.User;
+import com.alexandros.mytwitterlogin.Database.Entities.Follower;
+
 
 import java.util.List;
 
@@ -8,6 +9,7 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
@@ -15,17 +17,22 @@ import androidx.room.Update;
 public interface FollowerDao {
 
     @Insert
-    void insert(User user);
+    void insert(Follower follower);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertAll(List<Follower> followers);
 
     @Update
-    void update(User user);
+    void update(Follower follower);
 
     @Delete
-    void delete(User user);
+    void delete(Follower follower);
+
+
 
     @Query("DELETE FROM follower_table")
     void deleteAllFollowers();
 
     @Query("SELECT* FROM follower_table")
-    LiveData<List<User>> getAllFollowersFromDB();
+    LiveData<List<Follower>> getAllFollowersFromDB();
 }

@@ -1,4 +1,4 @@
-package com.alexandros.mytwitterlogin;
+package com.alexandros.mytwitterlogin.Adapters;
 
 public class CardViewItem {
     private String mText;

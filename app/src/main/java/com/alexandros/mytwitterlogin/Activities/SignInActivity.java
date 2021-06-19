@@ -1,4 +1,4 @@
-package com.alexandros.mytwitterlogin;
+package com.alexandros.mytwitterlogin.Activities;
 
 import android.content.Intent;
 
@@ -9,6 +9,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 
+import com.alexandros.mytwitterlogin.Activities.DownloadActivity;
+import com.alexandros.mytwitterlogin.Activities.MainActivity;
+import com.alexandros.mytwitterlogin.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;

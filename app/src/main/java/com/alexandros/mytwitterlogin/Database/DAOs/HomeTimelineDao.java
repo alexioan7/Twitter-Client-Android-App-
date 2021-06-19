@@ -1,6 +1,8 @@
 package com.alexandros.mytwitterlogin.Database.DAOs;
 
-import com.alexandros.mytwitterlogin.RESTApi.response.HomeTimelineResponse;
+
+
+import com.alexandros.mytwitterlogin.Database.Entities.HomeTimeline;
 
 import java.util.List;
 
@@ -15,17 +17,20 @@ import androidx.room.Update;
 public interface HomeTimelineDao {
 
     @Insert
-    void insert(HomeTimelineResponse home_tl_tweet);
+    void insert(HomeTimeline home_tl_tweet);
 
     @Update
-    void update(HomeTimelineResponse home_tl_tweet);
+    void update(HomeTimeline home_tl_tweet);
 
     @Delete
-    void delete(HomeTimelineResponse home_tl_tweet);
+    void delete(HomeTimeline home_tl_tweet);
+
 
     @Query("DELETE FROM hometimeline_table")
     void deleteAllHomeTimelineTweets();
 
     @Query("SELECT* FROM hometimeline_table")
-    LiveData<List<HomeTimelineResponse>> getHomeTimelineFromDB();
+    LiveData<List<HomeTimeline>> getHomeTimelineFromDB();
+
+
 }

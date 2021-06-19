@@ -1,6 +1,6 @@
 package com.alexandros.mytwitterlogin.Database.DAOs;
 
-import com.alexandros.mytwitterlogin.RESTApi.response.User;
+import com.alexandros.mytwitterlogin.Database.Entities.Friend;
 
 import java.util.List;
 
@@ -15,17 +15,17 @@ import androidx.room.Update;
 public interface FriendDao {
 
     @Insert
-    void insert(User user);
+    void insert(Friend friend);
 
     @Update
-    void update(User user);
+    void update(Friend friend);
 
     @Delete
-    void delete(User user);
+    void delete(Friend friend);
 
     @Query("DELETE FROM friend_table")
     void deleteAllFriends();
 
     @Query("SELECT* FROM FRIEND_TABLE")
-    LiveData<List<User>> getAllFriendsFromDB();
+    LiveData<List<Friend>> getAllFriendsFromDB();
 }

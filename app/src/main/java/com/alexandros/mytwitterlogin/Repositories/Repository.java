@@ -1,11 +1,16 @@
 package com.alexandros.mytwitterlogin.Repositories;
+import android.content.Context;
 import android.util.Log;
 
-import com.alexandros.mytwitterlogin.CardViewItem;
+import com.alexandros.mytwitterlogin.Adapters.CardViewItem;
+import com.alexandros.mytwitterlogin.Database.Converters.FollowerConverter;
 import com.alexandros.mytwitterlogin.Database.DAOs.FollowerDao;
 import com.alexandros.mytwitterlogin.Database.DAOs.FriendDao;
 import com.alexandros.mytwitterlogin.Database.DAOs.HomeTimelineDao;
 import com.alexandros.mytwitterlogin.Database.DAOs.LikeDao;
+import com.alexandros.mytwitterlogin.Database.Entities.Follower;
+import com.alexandros.mytwitterlogin.Database.MyDatabase;
+
 import com.alexandros.mytwitterlogin.RESTApi.RetrofitInstance;
 import com.alexandros.mytwitterlogin.RESTApi.TwitterClientService;
 import com.alexandros.mytwitterlogin.RESTApi.response.FollowersResponse;
@@ -31,10 +36,19 @@ public class Repository {
     List<HomeTimelineResponse> homeTimelineList;
     List<LikesResponse> listOfLikes;
 
+
     private LikeDao likeDao;
     private HomeTimelineDao homeTimelineDao;
     private FollowerDao followerDao;
     private FriendDao friendDao;
+
+    MyDatabase db;
+    List<Follower> followerListForDB;
+    LiveData<List<Follower>> followersFromDB;
+
+
+
+    FollowerConverter followerConverter = new FollowerConverter();
 
     TwitterClientService twitterClientService;
     private static volatile Repository repositoryInstance;
@@ -44,28 +58,24 @@ public class Repository {
     MutableLiveData<List<CardViewItem>> mutableLiveDataHomeTimeline = new MutableLiveData<>();
     MutableLiveData<List<CardViewItem>> mutableLiveDataLikes = new MutableLiveData<>();
 
-    private Repository(String accessToken, String accessTokenSecret){
+    private Repository(Context context, String accessToken, String accessTokenSecret){
         RetrofitInstance retrofitInstance = RetrofitInstance.getRetrofitInstance(accessToken,accessTokenSecret);
         twitterClientService = retrofitInstance.getTwitterClientService();
+        db = MyDatabase.getDataBase(context);
+        followerDao = db.followerDao();
+
     }
 
-    public static Repository getInstance(String accessToken, String accessTokenSecret){
+    public static Repository getInstance(Context context, String accessToken, String accessTokenSecret){
         if(repositoryInstance == null){
-            repositoryInstance = new Repository(accessToken, accessTokenSecret);
+            repositoryInstance = new Repository(context, accessToken, accessTokenSecret);
         }
         return repositoryInstance;
     }
 
 
-    /*
-    public Repository(Application application){
-        MyDatabase db = MyDatabase.getInstance(application);
-        friendDao = db.friendDao();
-        followerDao = db.followerDao();
-        homeTimelineDao = db.homeTimelineDao();
-        likeDao = db.likeDao();
-    }
-    */
+
+
 
 
 
@@ -85,6 +95,11 @@ public class Repository {
         return mutableLiveDataLikes;
     }
 
+
+    public LiveData<List<Follower>> getFollowersFromDB(){
+        return db.followerDao().getAllFollowersFromDB();
+    }
+
         // Function for getting the followers of a user
     public void getFollowers () {
 
@@ -101,18 +116,17 @@ public class Repository {
                 assert jsonResponse != null;
                 followerList = jsonResponse.getUsers();
 
-                // display on recyclerview
+
+                followerListForDB = followerConverter.ConvertUserListToFollowerList(followerList);
 
                 ArrayList<CardViewItem> cardViewList = new ArrayList<>();
+                db.getQueryExecutor().execute(()-> db.followerDao().insertAll(followerListForDB));
 
                 for (int i = 0; i < followerList.size(); i++) {
 
                     String followerName = followerList.get(i).getName();
-
                     cardViewList.add(new CardViewItem(followerName));
-
                 }
-                Log.d("CardViewList size: ", "onResponse: "+cardViewList.size());
 
                 mutableLiveDataFollowers.postValue(cardViewList);
             }
@@ -124,6 +138,8 @@ public class Repository {
             }
         });
     }
+
+
 
     public void getFriends(){
 
