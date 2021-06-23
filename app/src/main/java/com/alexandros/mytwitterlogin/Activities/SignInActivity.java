@@ -30,22 +30,19 @@ public class SignInActivity extends AppCompatActivity {
 
     String loggedInTwitterUserScreenName;
 
-
-
     TextView userIdTextView;
     TextView userNameTextView;
 
     Button downloadButton;
+    Button signOutButton;
+
     String accessToken;
     String accessTokenSecret;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
-
-
 
         Task<AuthResult> pendingResultTask = firebaseAuth.getPendingAuthResult();
         firebaseAuth.getPendingAuthResult();
@@ -57,39 +54,20 @@ public class SignInActivity extends AppCompatActivity {
                             new OnSuccessListener<AuthResult>() {
                                 @Override
                                 public void onSuccess(AuthResult authResult) {
-
                                     try{
-                                        //casting to make AuthCredential OAuthCredential
                                         OAuthCredential oAuthCredential = (OAuthCredential) authResult.getCredential();
                                         oAuthCredential.getAccessToken();
-
-                                        // User is signed in.
-                                        // IdP data available in
                                         authResult.getAdditionalUserInfo().getProfile();
-                                        // The OAuth access token can also be retrieved:
-                                        //authResult.getCredential().getAccessToken();
-                                        // The OAuth secret can be retrieved by calling:
-                                        //authResult.getCredential().getSecret();
                                         oAuthCredential.getSecret();
-
 
                                         userIdTextView = (TextView) findViewById(R.id.userIdTextView);
                                         userIdTextView.setText(authResult.getUser().getUid().toString());
                                         userNameTextView = (TextView) findViewById(R.id.userNameTextView);
                                         userNameTextView.setText(authResult.getUser().getDisplayName().toString());
-
-
                                         loggedInTwitterUserScreenName = authResult.getAdditionalUserInfo().getUsername();
-
-
-
                                     }catch (Exception e){
                                         e.printStackTrace();
                                     }
-
-
-
-
                                 }
                             })
                     .addOnFailureListener(
@@ -104,58 +82,35 @@ public class SignInActivity extends AppCompatActivity {
 
         {
             // There's no pending result so you need to start the sign-in flow.
-            // See below.
             OAuthProvider.Builder provider = OAuthProvider.newBuilder("twitter.com");
-
             firebaseAuth
                     .startActivityForSignInWithProvider(/* activity= */ this, provider.build())
                     .addOnSuccessListener(
                             new OnSuccessListener<AuthResult>() {
                                 @Override
                                 public void onSuccess(AuthResult authResult) {
-
-                                    //casting to make AuthCredential OAuthCredential
                                     OAuthCredential oAuthCredential = (OAuthCredential) authResult.getCredential();
                                     oAuthCredential.getAccessToken();
-                                    // User is signed in.
-                                    // IdP data available in
                                     authResult.getAdditionalUserInfo().getProfile();
-                                    // The OAuth access token can also be retrieved:
-                                    //authResult.getCredential().getAccessToken();
-
-                                    // The OAuth secret can be retrieved by calling:
-                                    // authResult.getCredential().getSecret().
                                     oAuthCredential.getSecret();
                                     try {
                                         userIdTextView = (TextView) findViewById(R.id.userIdTextView);
                                         userIdTextView.setText(authResult.getUser().getUid().toString());
                                         userNameTextView = (TextView) findViewById(R.id.userNameTextView);
                                         userNameTextView.setText(authResult.getUser().getDisplayName().toString());
-
-
                                         loggedInTwitterUserScreenName = authResult.getAdditionalUserInfo().getUsername();
-
-
                                     }catch (Exception e){
                                         e.printStackTrace();
                                     }
-
                                     try {
                                         accessToken = oAuthCredential.getAccessToken().toString();
                                         accessTokenSecret = oAuthCredential.getSecret().toString();
-
-
                                     }catch (Exception e){
                                         e.printStackTrace();
                                     }
-
-
                                     Log.i("Access token", oAuthCredential.getAccessToken().toString());
                                     Log.i("Secret Token", oAuthCredential.getSecret().toString());
                                     Log.i("twitter_screen_name: ", loggedInTwitterUserScreenName);
-
-
-
                                 }
                             })
                     .addOnFailureListener(
@@ -167,32 +122,28 @@ public class SignInActivity extends AppCompatActivity {
                                 }
                             });
         }
-
-
-
-
-
-
-
-   // Here ends the onCreate method!
-
+        // Here ends the onCreate method!
 }
 
 
 //    @Override
     protected void onStart(){
-            super.onStart();
-
+        super.onStart();
         downloadButton = findViewById(R.id.downloadButton);
+        signOutButton = findViewById(R.id.signOutButton);
 
-
-
-        //function for opening the downloadActivity
         downloadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openDownloadActivity();
-                finish();
+                //finish();
+            }
+        });
+
+        signOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openMainActivity();
             }
         });
 
@@ -203,25 +154,18 @@ public class SignInActivity extends AppCompatActivity {
 
 
     public void signOutFunction(View view){
-
         Log.i("button pressed", "Ok");
         try {
-
             firebaseAuth.signOut();
-
         }catch (Exception e){
             e.printStackTrace();
         }
-
-
         if (firebaseAuth.getCurrentUser() == null){
             Log.i("Logged Out", "log out success");
         }else{
             Log.i("Logged Out", "problem login out");
         }
-
         openMainActivity();
-
     }
 
     public void openMainActivity(){
@@ -236,7 +180,6 @@ public class SignInActivity extends AppCompatActivity {
         downloadIntent.putExtra("accessTokenSecret", accessTokenSecret);
         downloadIntent.putExtra("loggedInTwitterUserScreenName", loggedInTwitterUserScreenName);
         startActivity(downloadIntent);
-
     }
 
  // Here ends the main method!!
