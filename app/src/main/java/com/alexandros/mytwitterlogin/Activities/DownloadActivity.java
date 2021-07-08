@@ -9,6 +9,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import android.os.Bundle;
 
+import com.alexandros.mytwitterlogin.Fragments.DegreeOfSeparationFragment;
 import com.alexandros.mytwitterlogin.Fragments.FollowersFragment;
 import com.alexandros.mytwitterlogin.Adapters.FragmentsHostAdapter;
 import com.alexandros.mytwitterlogin.Fragments.FriendsFragment;
@@ -65,6 +66,7 @@ public class DownloadActivity extends AppCompatActivity {
         fragments.add(new FriendsFragment());
         fragments.add(new HomeTimelineFragment());
         fragments.add(new LikesFragment());
+        fragments.add(new DegreeOfSeparationFragment());
 
         FragmentStateAdapter stateAdapter = new FragmentsHostAdapter(this.getSupportFragmentManager(),getLifecycle(),fragments);
         mRecyclerView.setAdapter(stateAdapter);
@@ -81,6 +83,9 @@ public class DownloadActivity extends AppCompatActivity {
                     break;
                 case 3:
                     tab.setText("likes");
+                    break;
+                case 4:
+                    tab.setText("Degree of Separation");
                     break;
             }
         }))).attach();
