@@ -6,10 +6,13 @@ import webbrowser
 import time
 import sys
 import queue
+
+
 from collections import deque
 
-ACCESS_TOKEN = '2766268384-MgMIRFSKHKC87kAI67Yb8znhUpzVypYl6vyiltu'
-ACCESS_SECRET = '5QeA8xpez3EVnEkQLx2no57KMasvGwVhFAGqiSD6oATLw'
+
+# ACCESS_TOKEN = '2766268384-MgMIRFSKHKC87kAI67Yb8znhUpzVypYl6vyiltu'
+# ACCESS_SECRET = '5QeA8xpez3EVnEkQLx2no57KMasvGwVhFAGqiSD6oATLw'
 consumer_key = 'X49WPfKJ3lJixxzCVB8KuJK7z'
 consumer_secret = 'bqbzunS3mKqNMQCnnlv5e2T5RkLmw9Ckzs2XFWeBODSWXU49yC'
 
@@ -94,28 +97,20 @@ class Frontier():
         return self.metadata[n]["distance"]
 
 
-def main (source,destination):
+def main (source,destination,access_token, access_token_secret):
 
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 
     try:
-        '''
-        redirect_url = auth.get_authorization_url()
-        print("--> Opening in your browser: {0}".format(redirect_url))
-        print("--> Please copy the PIN here after you authorize.\n")
 
-        webbrowser.open(redirect_url)
-        verifier = input("Verifier>  ")
-
-        auth.get_access_token(verifier)
-        print(auth.access_token)
-        '''
-        auth.set_access_token(ACCESS_TOKEN, ACCESS_SECRET)
+        auth.set_access_token(access_token, access_token_secret)
 
     except tweepy.TweepError as e:
         print("Something went wrong! Couldn't authenticate.")
         print(e)
         sys.exit(1)
+
+
 
     counter = 0
     while True:
@@ -166,7 +161,9 @@ def main (source,destination):
             m = src_frontier.perimeter.intersection(dest_frontier.perimeter).pop()
 
             separation = src_frontier.get_distance(m) + dest_frontier.get_distance(m) - 1
-            print("Separation: {0}".format(separation))
+
+
+
 
             # To collect the users in between src_node and dest_node
             mediators = deque()
@@ -203,11 +200,10 @@ def main (source,destination):
             print("Something went wrong.")
             print(e)
             sys.exit(1)
-        
 
-        
-            
-    
+
+    print("Separation: {0}".format(separation))
+    return separation
     
     
         

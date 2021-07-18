@@ -1,7 +1,10 @@
 package com.alexandros.mytwitterlogin.Activities;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -29,6 +32,7 @@ public class SignInActivity extends AppCompatActivity {
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
 
     String loggedInTwitterUserScreenName;
+    String userName;
 
     TextView userIdTextView;
     TextView userNameTextView;
@@ -39,10 +43,13 @@ public class SignInActivity extends AppCompatActivity {
     String accessToken;
     String accessTokenSecret;
 
+    SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
+        sharedPreferences = getBaseContext().getSharedPreferences(getPackageName(), Activity.MODE_PRIVATE);
 
         Task<AuthResult> pendingResultTask = firebaseAuth.getPendingAuthResult();
         firebaseAuth.getPendingAuthResult();
@@ -65,6 +72,7 @@ public class SignInActivity extends AppCompatActivity {
                                         userNameTextView = (TextView) findViewById(R.id.userNameTextView);
                                         userNameTextView.setText(authResult.getUser().getDisplayName().toString());
                                         loggedInTwitterUserScreenName = authResult.getAdditionalUserInfo().getUsername();
+                                        sharedPreferences.edit().putString("user",loggedInTwitterUserScreenName).apply();
                                     }catch (Exception e){
                                         e.printStackTrace();
                                     }
@@ -99,6 +107,7 @@ public class SignInActivity extends AppCompatActivity {
                                         userNameTextView = (TextView) findViewById(R.id.userNameTextView);
                                         userNameTextView.setText(authResult.getUser().getDisplayName().toString());
                                         loggedInTwitterUserScreenName = authResult.getAdditionalUserInfo().getUsername();
+                                        sharedPreferences.edit().putString("user",loggedInTwitterUserScreenName).apply();
                                     }catch (Exception e){
                                         e.printStackTrace();
                                     }
@@ -156,6 +165,7 @@ public class SignInActivity extends AppCompatActivity {
     public void signOutFunction(View view){
         Log.i("button pressed", "Ok");
         try {
+            sharedPreferences.edit().clear().apply();
             firebaseAuth.signOut();
         }catch (Exception e){
             e.printStackTrace();

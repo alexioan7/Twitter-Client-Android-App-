@@ -4,6 +4,8 @@ import com.alexandros.mytwitterlogin.Adapters.CardViewItem;
 import com.alexandros.mytwitterlogin.Database.Entities.Follower;
 import com.alexandros.mytwitterlogin.Activities.MainActivity;
 import com.alexandros.mytwitterlogin.Repositories.Repository;
+import com.chaquo.python.PyObject;
+import com.chaquo.python.Python;
 
 import java.util.List;
 
@@ -13,19 +15,21 @@ import androidx.lifecycle.ViewModel;
 public class UserDataViewModel extends ViewModel {
 
     private final Repository repository;
-
-
+    private final String accessToken,accessTokenSecret;
 
 
 
     public  UserDataViewModel(String accessToken, String accessTokenSecret) {
-
+        this.accessToken = accessToken;
+        this.accessTokenSecret = accessTokenSecret;
 
         repository = Repository.getInstance( MainActivity.getAppContext(), accessToken,accessTokenSecret);
         repository.getFollowers();
         repository.getFriends();
         repository.getHomeTimeline();
         repository.getLikes();
+
+
 
 
     }
@@ -51,6 +55,13 @@ public class UserDataViewModel extends ViewModel {
 
     public LiveData<List<CardViewItem>> getLikesLive() {
         return repository.getLikesLive();
+    }
+
+    public  int getSeparation(Python python,String uName, String tName){
+
+      PyObject module =  python.getModule("digsep").callAttr("main", uName, tName,accessToken,accessTokenSecret);
+      return  module.toInt();
+
     }
 
 
