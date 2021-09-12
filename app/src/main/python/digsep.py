@@ -108,7 +108,7 @@ def main (source,destination,access_token, access_token_secret):
     except tweepy.TweepError as e:
         print("Something went wrong! Couldn't authenticate.")
         print(e)
-        sys.exit(1)
+        ##sys.exit(1)
 
 
 
@@ -126,7 +126,7 @@ def main (source,destination,access_token, access_token_secret):
 
         if (source == destination):
             print("Both users are the same!")
-            exit(0)
+            ##exit(0)
             break
 
         try:
@@ -194,12 +194,16 @@ def main (source,destination,access_token, access_token_secret):
         except tweepy.RateLimitError:
             print("""It seems we have exceeded twitter's api call limit.
                      Please come back after 15 minutes.""")
-            sys.exit(1)
+            separation = -1
+            return separation
+            ##sys.exit(1)
 
         except tweepy.TweepError as e:
             print("Something went wrong.")
             print(e)
-            sys.exit(1)
+            separation = -1
+            return separation
+            ##sys.exit(1)
 
 
     print("Separation: {0}".format(separation))

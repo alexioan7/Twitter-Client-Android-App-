@@ -8,7 +8,9 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import retrofit2.Call;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,11 +21,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.alexandros.mytwitterlogin.R;
+import com.alexandros.mytwitterlogin.RESTApi.RetrofitInstance;
+import com.alexandros.mytwitterlogin.RESTApi.response.User;
 import com.alexandros.mytwitterlogin.ViewModels.UserDataViewModel;
 import com.alexandros.mytwitterlogin.ViewModels.ViewModelFactory;
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
+
+import java.util.List;
+import java.util.Objects;
 
 public class DegreeOfSeparationFragment extends Fragment {
 
@@ -34,6 +41,7 @@ public class DegreeOfSeparationFragment extends Fragment {
     private static Context context;
 
     String separation = " ";
+    String userScreenName = "";
     private SharedPreferences sharedPreferences;
     UserDataViewModel viewModel;
 
@@ -44,12 +52,12 @@ public class DegreeOfSeparationFragment extends Fragment {
 
         //Button button = (Button) requireActivity().findViewById(R.id.button);
 
-        sharedPreferences = getContext().getSharedPreferences(getContext().getPackageName(), Activity.MODE_PRIVATE);
+        sharedPreferences = Objects.requireNonNull(getContext()).getSharedPreferences(getContext().getPackageName(), Activity.MODE_PRIVATE);
 
         String accessToken = requireActivity().getIntent().getExtras().getString("accessToken");
         String accessTokenSecret = requireActivity().getIntent().getExtras().getString("accessTokenSecret");
 
-         viewModel = new ViewModelProvider(requireActivity(),
+        viewModel = new ViewModelProvider(requireActivity(),
                 new ViewModelFactory(accessToken, accessTokenSecret)).get(UserDataViewModel.class);
 
 
@@ -61,11 +69,11 @@ public class DegreeOfSeparationFragment extends Fragment {
         //py = Python.getInstance();
 
 
-
         return view;
 
 
     }
+
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
@@ -75,12 +83,30 @@ public class DegreeOfSeparationFragment extends Fragment {
         TextView resultTextView = view.findViewById(R.id.resultTextView);
 
 
-
         view.findViewById(R.id.button).setOnClickListener(v -> {
-            int result;
-            result = viewModel.getSeparation(Python.getInstance(),sharedPreferences.getString("user",""), editText.getText().toString() );
-            resultTextView.setText(String.valueOf(result));
-            Log.i("from fragment", String.valueOf(result));
+            final int[] result = new int[1];
+            userScreenName = editText.getText().toString();
+            if (!userScreenName.isEmpty()) {
+                viewModel.lookIfSomeoneIsTwitterUser(userScreenName);
+                viewModel.getUser().observe(getViewLifecycleOwner(), new Observer<String>() {
+                    @Override
+                    public void onChanged(String s) {
+                        if (s.equals("No user matches for specified terms.")) {
+                            editText.setError(s);
+                        } else {
+
+                            result[0] = viewModel.getSeparation(Python.getInstance(), sharedPreferences.getString("user", ""), userScreenName);
+                            resultTextView.setText(String.valueOf(result[0]));
+                            Log.i("from fragment", String.valueOf(result[0]));
+                        }
+
+
+                    }
+                });
+
+            }
+
+
         });
     }
 }

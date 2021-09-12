@@ -3,6 +3,7 @@ package com.alexandros.mytwitterlogin.ViewModels;
 import com.alexandros.mytwitterlogin.Adapters.CardViewItem;
 import com.alexandros.mytwitterlogin.Database.Entities.Follower;
 import com.alexandros.mytwitterlogin.Activities.MainActivity;
+import com.alexandros.mytwitterlogin.RESTApi.response.User;
 import com.alexandros.mytwitterlogin.Repositories.Repository;
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
@@ -11,6 +12,7 @@ import java.util.List;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
+import retrofit2.Call;
 
 public class UserDataViewModel extends ViewModel {
 
@@ -40,6 +42,10 @@ public class UserDataViewModel extends ViewModel {
         return repository.getFollowersLive();
     }
     */
+    public LiveData<String> getUser(){
+        return repository.getUser();
+    }
+
     public LiveData<List<Follower>> getFollowersFromDBLive(){
         return repository.getFollowersFromDB();
     }
@@ -64,6 +70,9 @@ public class UserDataViewModel extends ViewModel {
 
     }
 
+    public void lookIfSomeoneIsTwitterUser(String name){
+       repository.lookIfSomeoneIsTwitterUser(name);
+    }
 
 
 

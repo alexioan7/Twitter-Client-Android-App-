@@ -1,9 +1,7 @@
 package com.alexandros.mytwitterlogin.Activities;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,20 +9,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-
-import com.alexandros.mytwitterlogin.Activities.DownloadActivity;
-import com.alexandros.mytwitterlogin.Activities.MainActivity;
 import com.alexandros.mytwitterlogin.R;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.OAuthCredential;
 import com.google.firebase.auth.OAuthProvider;
 
-
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class SignInActivity extends AppCompatActivity {
@@ -56,80 +47,64 @@ public class SignInActivity extends AppCompatActivity {
 
         if(pendingResultTask !=null){
             // There's something already here! Finish the sign-in for your user.
+            // Handle failure.
             pendingResultTask
                     .addOnSuccessListener(
-                            new OnSuccessListener<AuthResult>() {
-                                @Override
-                                public void onSuccess(AuthResult authResult) {
-                                    try{
-                                        OAuthCredential oAuthCredential = (OAuthCredential) authResult.getCredential();
-                                        oAuthCredential.getAccessToken();
-                                        authResult.getAdditionalUserInfo().getProfile();
-                                        oAuthCredential.getSecret();
+                            authResult -> {
+                                try{
+                                    OAuthCredential oAuthCredential = (OAuthCredential) authResult.getCredential();
+                                    oAuthCredential.getAccessToken();
+                                    authResult.getAdditionalUserInfo().getProfile();
+                                    oAuthCredential.getSecret();
 
-                                        userIdTextView = (TextView) findViewById(R.id.userIdTextView);
-                                        userIdTextView.setText(authResult.getUser().getUid().toString());
-                                        userNameTextView = (TextView) findViewById(R.id.userNameTextView);
-                                        userNameTextView.setText(authResult.getUser().getDisplayName().toString());
-                                        loggedInTwitterUserScreenName = authResult.getAdditionalUserInfo().getUsername();
-                                        sharedPreferences.edit().putString("user",loggedInTwitterUserScreenName).apply();
-                                    }catch (Exception e){
-                                        e.printStackTrace();
-                                    }
+                                    userIdTextView = findViewById(R.id.userIdTextView);
+                                    userIdTextView.setText(authResult.getUser().getUid());
+                                    userNameTextView = findViewById(R.id.userNameTextView);
+                                    userNameTextView.setText(authResult.getUser().getDisplayName());
+                                    loggedInTwitterUserScreenName = authResult.getAdditionalUserInfo().getUsername();
+                                    sharedPreferences.edit().putString("user",loggedInTwitterUserScreenName).apply();
+                                }catch (Exception e){
+                                    e.printStackTrace();
                                 }
                             })
                     .addOnFailureListener(
-                            new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    // Handle failure.
-                                    e.printStackTrace();
-                                }
-                            });
+                            Throwable::printStackTrace);
         } else
 
         {
             // There's no pending result so you need to start the sign-in flow.
             OAuthProvider.Builder provider = OAuthProvider.newBuilder("twitter.com");
+            // Handle failure.
             firebaseAuth
                     .startActivityForSignInWithProvider(/* activity= */ this, provider.build())
                     .addOnSuccessListener(
-                            new OnSuccessListener<AuthResult>() {
-                                @Override
-                                public void onSuccess(AuthResult authResult) {
-                                    OAuthCredential oAuthCredential = (OAuthCredential) authResult.getCredential();
-                                    oAuthCredential.getAccessToken();
-                                    authResult.getAdditionalUserInfo().getProfile();
-                                    oAuthCredential.getSecret();
-                                    try {
-                                        userIdTextView = (TextView) findViewById(R.id.userIdTextView);
-                                        userIdTextView.setText(authResult.getUser().getUid().toString());
-                                        userNameTextView = (TextView) findViewById(R.id.userNameTextView);
-                                        userNameTextView.setText(authResult.getUser().getDisplayName().toString());
-                                        loggedInTwitterUserScreenName = authResult.getAdditionalUserInfo().getUsername();
-                                        sharedPreferences.edit().putString("user",loggedInTwitterUserScreenName).apply();
-                                    }catch (Exception e){
-                                        e.printStackTrace();
-                                    }
-                                    try {
-                                        accessToken = oAuthCredential.getAccessToken().toString();
-                                        accessTokenSecret = oAuthCredential.getSecret().toString();
-                                    }catch (Exception e){
-                                        e.printStackTrace();
-                                    }
-                                    Log.i("Access token", oAuthCredential.getAccessToken().toString());
-                                    Log.i("Secret Token", oAuthCredential.getSecret().toString());
-                                    Log.i("twitter_screen_name: ", loggedInTwitterUserScreenName);
-                                }
-                            })
-                    .addOnFailureListener(
-                            new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    // Handle failure.
+                            authResult -> {
+                                OAuthCredential oAuthCredential = (OAuthCredential) authResult.getCredential();
+                                oAuthCredential.getAccessToken();
+                                authResult.getAdditionalUserInfo().getProfile();
+                                oAuthCredential.getSecret();
+                                try {
+                                    userIdTextView = findViewById(R.id.userIdTextView);
+                                    userIdTextView.setText(authResult.getUser().getUid());
+                                    userNameTextView = findViewById(R.id.userNameTextView);
+                                    userNameTextView.setText(authResult.getUser().getDisplayName());
+                                    loggedInTwitterUserScreenName = authResult.getAdditionalUserInfo().getUsername();
+                                    sharedPreferences.edit().putString("user",loggedInTwitterUserScreenName).apply();
+                                }catch (Exception e){
                                     e.printStackTrace();
                                 }
-                            });
+                                try {
+                                    accessToken = oAuthCredential.getAccessToken();
+                                    accessTokenSecret = oAuthCredential.getSecret();
+                                }catch (Exception e){
+                                    e.printStackTrace();
+                                }
+                                Log.i("Access token", oAuthCredential.getAccessToken());
+                                Log.i("Secret Token", oAuthCredential.getSecret());
+                                Log.i("twitter_screen_name: ", loggedInTwitterUserScreenName);
+                            })
+                    .addOnFailureListener(
+                            Throwable::printStackTrace);
         }
         // Here ends the onCreate method!
 }
@@ -141,20 +116,12 @@ public class SignInActivity extends AppCompatActivity {
         downloadButton = findViewById(R.id.downloadButton);
         signOutButton = findViewById(R.id.signOutButton);
 
-        downloadButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDownloadActivity();
-                //finish();
-            }
+        downloadButton.setOnClickListener(v -> {
+            openDownloadActivity();
+            //finish();
         });
 
-        signOutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openMainActivity();
-            }
-        });
+        signOutButton.setOnClickListener(v -> openMainActivity());
 
     }
 

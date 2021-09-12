@@ -5,6 +5,8 @@ import com.alexandros.mytwitterlogin.RESTApi.response.FollowersResponse;
 import com.alexandros.mytwitterlogin.RESTApi.response.FriendsResponse;
 import com.alexandros.mytwitterlogin.RESTApi.response.HomeTimelineResponse;
 import com.alexandros.mytwitterlogin.RESTApi.response.LikesResponse;
+import com.alexandros.mytwitterlogin.RESTApi.response.LookUpUserResponse;
+import com.alexandros.mytwitterlogin.RESTApi.response.User;
 
 import java.util.List;
 
@@ -28,6 +30,9 @@ public interface TwitterClientService {
 
     @GET("favorites/list.json")
     Call<List<LikesResponse>> getLikes(@Query("count") String n, @Query("include_entities") String s);
+
+    @GET("users/lookup.json")
+    Call<List<LookUpUserResponse>> lookupUser(@Query("screen_name") String screenName);
 
 
 

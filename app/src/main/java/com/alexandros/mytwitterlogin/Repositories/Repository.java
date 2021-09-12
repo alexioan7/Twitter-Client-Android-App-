@@ -17,7 +17,9 @@ import com.alexandros.mytwitterlogin.RESTApi.response.FollowersResponse;
 import com.alexandros.mytwitterlogin.RESTApi.response.FriendsResponse;
 import com.alexandros.mytwitterlogin.RESTApi.response.HomeTimelineResponse;
 import com.alexandros.mytwitterlogin.RESTApi.response.LikesResponse;
+import com.alexandros.mytwitterlogin.RESTApi.response.LookUpUserResponse;
 import com.alexandros.mytwitterlogin.RESTApi.response.User;
+import com.google.api.Http;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +31,7 @@ import androidx.lifecycle.MutableLiveData;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.http.HTTP;
 
 public class Repository {
     List<User> followerList;
@@ -57,6 +60,7 @@ public class Repository {
     MutableLiveData<List<CardViewItem>> mutableLiveDataFriends = new MutableLiveData<>();
     MutableLiveData<List<CardViewItem>> mutableLiveDataHomeTimeline = new MutableLiveData<>();
     MutableLiveData<List<CardViewItem>> mutableLiveDataLikes = new MutableLiveData<>();
+    MutableLiveData <String> user = new MutableLiveData<>();
 
     private Repository(Context context, String accessToken, String accessTokenSecret){
         RetrofitInstance retrofitInstance = RetrofitInstance.getRetrofitInstance(accessToken,accessTokenSecret);
@@ -74,10 +78,9 @@ public class Repository {
     }
 
 
-
-
-
-
+    public LiveData<String> getUser() {
+        return user;
+    }
 
     public LiveData<List<CardViewItem>> getFollowersLive() {
         return mutableLiveDataFollowers;
@@ -240,6 +243,26 @@ public class Repository {
             @Override
             public void onFailure(@NonNull Call<List<LikesResponse>> call, @NonNull Throwable t) {
                 Log.d("Error", t.getMessage());
+            }
+        });
+    }
+
+    public void lookIfSomeoneIsTwitterUser(String name){
+        Call<List<LookUpUserResponse>> call = twitterClientService.lookupUser(name);
+        call.enqueue(new Callback<List<LookUpUserResponse>>() {
+            @Override
+            public void onResponse(Call<List<LookUpUserResponse>>call, Response<List<LookUpUserResponse>> response) {
+                if (!response.isSuccessful() && response.code() == 404){
+                    user.postValue("Invalid User");
+                }else {
+                    Log.d("user", response.body().get(0).getScreenName());
+                    user.postValue("");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<LookUpUserResponse>> call,@NonNull Throwable t) {
+                Log.d("Error", t.getMessage() );
             }
         });
     }
