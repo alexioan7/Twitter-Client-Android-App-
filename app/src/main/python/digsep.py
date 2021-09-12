@@ -100,7 +100,7 @@ class Frontier():
 def main (source,destination,access_token, access_token_secret):
 
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-
+    error = -1;
     try:
 
         auth.set_access_token(access_token, access_token_secret)
@@ -108,6 +108,7 @@ def main (source,destination,access_token, access_token_secret):
     except tweepy.TweepError as e:
         print("Something went wrong! Couldn't authenticate.")
         print(e)
+        return error;
         ##sys.exit(1)
 
 
@@ -125,6 +126,7 @@ def main (source,destination,access_token, access_token_secret):
 
 
         if (source == destination):
+            separation =-1
             print("Both users are the same!")
             ##exit(0)
             break
@@ -194,20 +196,24 @@ def main (source,destination,access_token, access_token_secret):
         except tweepy.RateLimitError:
             print("""It seems we have exceeded twitter's api call limit.
                      Please come back after 15 minutes.""")
-            separation = -1
-            return separation
+            ##separation = -1
+            ##returin separation;
+            return error
             ##sys.exit(1)
 
         except tweepy.TweepError as e:
             print("Something went wrong.")
             print(e)
-            separation = -1
-            return separation
+            return error
+            ##separation = -1
+            ##return separation
             ##sys.exit(1)
 
-
-    print("Separation: {0}".format(separation))
-    return separation
+    if (separation > -1):
+        print("Separation: {0}".format(separation))
+        return separation
+    else:
+        return error
     
     
         

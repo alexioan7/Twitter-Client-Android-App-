@@ -78,35 +78,21 @@ public class DegreeOfSeparationFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         EditText editText = view.findViewById(R.id.editText);
         TextView resultTextView = view.findViewById(R.id.resultTextView);
-
-
-        view.findViewById(R.id.button).setOnClickListener(v -> {
-            final int[] result = new int[1];
-            userScreenName = editText.getText().toString();
-            if (!userScreenName.isEmpty()) {
-                viewModel.lookIfSomeoneIsTwitterUser(userScreenName);
-                viewModel.getUser().observe(getViewLifecycleOwner(), new Observer<String>() {
-                    @Override
-                    public void onChanged(String s) {
-                        if (s.equals("No user matches for specified terms.")) {
-                            editText.setError(s);
-                        } else {
-
-                            result[0] = viewModel.getSeparation(Python.getInstance(), sharedPreferences.getString("user", ""), userScreenName);
-                            resultTextView.setText(String.valueOf(result[0]));
-                            Log.i("from fragment", String.valueOf(result[0]));
-                        }
-
-
-                    }
-                });
-
+        view.findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int result = -1;
+                userScreenName = editText.getText().toString();
+                result = viewModel.getSeparation(Python.getInstance(), sharedPreferences.getString("user", ""), userScreenName);
+                resultTextView.setText(String.valueOf(result));
+                Log.i("from fragment", String.valueOf(result));
             }
-
-
         });
+
+
+
+
     }
 }
