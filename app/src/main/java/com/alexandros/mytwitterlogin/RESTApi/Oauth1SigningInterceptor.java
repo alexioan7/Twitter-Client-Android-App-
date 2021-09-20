@@ -16,6 +16,8 @@
 
 package com.alexandros.mytwitterlogin.RESTApi;
 
+import android.util.Log;
+
 import com.alexandros.mytwitterlogin.utils.UrlEscapeUtils;
 
 import java.io.IOException;
@@ -73,7 +75,9 @@ public final class Oauth1SigningInterceptor implements Interceptor {
     public Request signRequest(Request request) throws IOException {
         byte[] nonce = new byte[32];
         random.nextBytes(nonce);
+
         String oauthNonce = ByteString.of(nonce).base64().replaceAll("\\W", "");
+        Log.i("oauth_nonce", oauthNonce);
         String oauthTimestamp = clock.millis();
 
         String consumerKeyValue = UrlEscapeUtils.escape(consumerKey);
@@ -88,7 +92,10 @@ public final class Oauth1SigningInterceptor implements Interceptor {
         parameters.put(OAUTH_VERSION, OAUTH_VERSION_VALUE);
 
         HttpUrl url = request.url();
+        Log.i("URL", "signRequest: "+url.toString());
+        Log.i("SIZE", String.valueOf(url.querySize()));
         for (int i = 0; i < url.querySize(); i++) {
+            Log.i("Parameters", url.queryParameterName(i)+" === "+url.queryParameterValue(i));
             parameters.put(UrlEscapeUtils.escape(url.queryParameterName(i)),
                     UrlEscapeUtils.escape(url.queryParameterValue(i)));
         }
@@ -143,6 +150,7 @@ public final class Oauth1SigningInterceptor implements Interceptor {
         }
         byte[] result = mac.doFinal(base.readByteArray());
         String signature = ByteString.of(result).base64();
+        Log.i("Signature", "signRequest: "+signature);
 
         String authorization =
                 "OAuth " + OAUTH_CONSUMER_KEY + "=\"" + consumerKeyValue + "\", " + OAUTH_NONCE + "=\""

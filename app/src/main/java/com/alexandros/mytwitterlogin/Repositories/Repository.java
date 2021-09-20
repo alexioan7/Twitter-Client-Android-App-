@@ -1,6 +1,15 @@
-package com.alexandros.mytwitterlogin;
-
+package com.alexandros.mytwitterlogin.Repositories;
+import android.content.Context;
 import android.util.Log;
+
+import com.alexandros.mytwitterlogin.Adapters.CardViewItem;
+import com.alexandros.mytwitterlogin.Database.Converters.FollowerConverter;
+import com.alexandros.mytwitterlogin.Database.DAOs.FollowerDao;
+import com.alexandros.mytwitterlogin.Database.DAOs.FriendDao;
+import com.alexandros.mytwitterlogin.Database.DAOs.HomeTimelineDao;
+import com.alexandros.mytwitterlogin.Database.DAOs.LikeDao;
+import com.alexandros.mytwitterlogin.Database.Entities.Follower;
+import com.alexandros.mytwitterlogin.Database.MyDatabase;
 
 import com.alexandros.mytwitterlogin.RESTApi.RetrofitInstance;
 import com.alexandros.mytwitterlogin.RESTApi.TwitterClientService;
@@ -8,7 +17,9 @@ import com.alexandros.mytwitterlogin.RESTApi.response.FollowersResponse;
 import com.alexandros.mytwitterlogin.RESTApi.response.FriendsResponse;
 import com.alexandros.mytwitterlogin.RESTApi.response.HomeTimelineResponse;
 import com.alexandros.mytwitterlogin.RESTApi.response.LikesResponse;
+import com.alexandros.mytwitterlogin.RESTApi.response.LookUpUserResponse;
 import com.alexandros.mytwitterlogin.RESTApi.response.User;
+import com.google.api.Http;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,12 +31,27 @@ import androidx.lifecycle.MutableLiveData;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.http.HTTP;
 
 public class Repository {
     List<User> followerList;
     List<User> friendList;
     List<HomeTimelineResponse> homeTimelineList;
     List<LikesResponse> listOfLikes;
+
+
+    private LikeDao likeDao;
+    private HomeTimelineDao homeTimelineDao;
+    private FollowerDao followerDao;
+    private FriendDao friendDao;
+
+    MyDatabase db;
+    List<Follower> followerListForDB;
+    LiveData<List<Follower>> followersFromDB;
+
+
+
+    FollowerConverter followerConverter = new FollowerConverter();
 
     TwitterClientService twitterClientService;
     private static volatile Repository repositoryInstance;
@@ -34,17 +60,26 @@ public class Repository {
     MutableLiveData<List<CardViewItem>> mutableLiveDataFriends = new MutableLiveData<>();
     MutableLiveData<List<CardViewItem>> mutableLiveDataHomeTimeline = new MutableLiveData<>();
     MutableLiveData<List<CardViewItem>> mutableLiveDataLikes = new MutableLiveData<>();
+    MutableLiveData <String> user = new MutableLiveData<>();
 
-    private Repository(String accessToken, String accessTokenSecret){
+    private Repository(Context context, String accessToken, String accessTokenSecret){
         RetrofitInstance retrofitInstance = RetrofitInstance.getRetrofitInstance(accessToken,accessTokenSecret);
         twitterClientService = retrofitInstance.getTwitterClientService();
+        db = MyDatabase.getDataBase(context);
+        followerDao = db.followerDao();
+
     }
 
-    public static Repository getInstance(String accessToken, String accessTokenSecret){
+    public static Repository getInstance(Context context, String accessToken, String accessTokenSecret){
         if(repositoryInstance == null){
-            repositoryInstance = new Repository(accessToken, accessTokenSecret);
+            repositoryInstance = new Repository(context, accessToken, accessTokenSecret);
         }
         return repositoryInstance;
+    }
+
+
+    public LiveData<String> getUser() {
+        return user;
     }
 
     public LiveData<List<CardViewItem>> getFollowersLive() {
@@ -63,6 +98,11 @@ public class Repository {
         return mutableLiveDataLikes;
     }
 
+
+    public LiveData<List<Follower>> getFollowersFromDB(){
+        return db.followerDao().getAllFollowersFromDB();
+    }
+
         // Function for getting the followers of a user
     public void getFollowers () {
 
@@ -79,18 +119,17 @@ public class Repository {
                 assert jsonResponse != null;
                 followerList = jsonResponse.getUsers();
 
-                // display on recyclerview
+
+                followerListForDB = followerConverter.ConvertUserListToFollowerList(followerList);
 
                 ArrayList<CardViewItem> cardViewList = new ArrayList<>();
+                db.getQueryExecutor().execute(()-> db.followerDao().insertAll(followerListForDB));
 
-                //Display on Logcat the followers list
                 for (int i = 0; i < followerList.size(); i++) {
 
                     String followerName = followerList.get(i).getName();
-
                     cardViewList.add(new CardViewItem(followerName));
                 }
-                Log.d("CardViewList size: ", "onResponse: "+cardViewList.size());
 
                 mutableLiveDataFollowers.postValue(cardViewList);
             }
@@ -102,6 +141,8 @@ public class Repository {
             }
         });
     }
+
+
 
     public void getFriends(){
 
@@ -119,11 +160,9 @@ public class Repository {
                 friendList = jsonFriendsResponse.getUsers();
 
                 // display on recyclerview
-
                 ArrayList<CardViewItem> cardViewList = new ArrayList<>();
 
 
-                //Display on Logcat the friends list
                 for (int i =0; i < friendList.size(); i++) {
 
                     String friendName = friendList.get(i).getName();
@@ -162,9 +201,6 @@ public class Repository {
                 for (int i = 0; i < homeTimelineList.size(); i++) {
 
                     String homeTimeline = homeTimelineList.get(i).getText();
-
-                    Log.d("text from log timeline", homeTimeline);
-
                     cardViewList.add(new CardViewItem(homeTimeline));
 
                 }
@@ -207,6 +243,26 @@ public class Repository {
             @Override
             public void onFailure(@NonNull Call<List<LikesResponse>> call, @NonNull Throwable t) {
                 Log.d("Error", t.getMessage());
+            }
+        });
+    }
+
+    public void lookIfSomeoneIsTwitterUser(String name){
+        Call<List<LookUpUserResponse>> call = twitterClientService.lookupUser(name);
+        call.enqueue(new Callback<List<LookUpUserResponse>>() {
+            @Override
+            public void onResponse(Call<List<LookUpUserResponse>>call, Response<List<LookUpUserResponse>> response) {
+                if (!response.isSuccessful() && response.code() == 404){
+                    user.postValue("Invalid User");
+                }else {
+                    Log.d("user", response.body().get(0).getScreenName());
+                    user.postValue("");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<LookUpUserResponse>> call,@NonNull Throwable t) {
+                Log.d("Error", t.getMessage() );
             }
         });
     }

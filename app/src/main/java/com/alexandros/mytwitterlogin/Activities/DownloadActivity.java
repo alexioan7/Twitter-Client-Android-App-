@@ -1,4 +1,4 @@
-package com.alexandros.mytwitterlogin;
+package com.alexandros.mytwitterlogin.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -9,10 +9,13 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import android.os.Bundle;
 
+import com.alexandros.mytwitterlogin.Fragments.DegreeOfSeparationFragment;
 import com.alexandros.mytwitterlogin.Fragments.FollowersFragment;
+import com.alexandros.mytwitterlogin.Adapters.FragmentsHostAdapter;
 import com.alexandros.mytwitterlogin.Fragments.FriendsFragment;
 import com.alexandros.mytwitterlogin.Fragments.HomeTimelineFragment;
 import com.alexandros.mytwitterlogin.Fragments.LikesFragment;
+import com.alexandros.mytwitterlogin.R;
 import com.alexandros.mytwitterlogin.RESTApi.response.HomeTimelineResponse;
 import com.alexandros.mytwitterlogin.RESTApi.response.LikesResponse;
 import com.alexandros.mytwitterlogin.RESTApi.TwitterClientService;
@@ -63,6 +66,7 @@ public class DownloadActivity extends AppCompatActivity {
         fragments.add(new FriendsFragment());
         fragments.add(new HomeTimelineFragment());
         fragments.add(new LikesFragment());
+        fragments.add(new DegreeOfSeparationFragment());
 
         FragmentStateAdapter stateAdapter = new FragmentsHostAdapter(this.getSupportFragmentManager(),getLifecycle(),fragments);
         mRecyclerView.setAdapter(stateAdapter);
@@ -80,8 +84,13 @@ public class DownloadActivity extends AppCompatActivity {
                 case 3:
                     tab.setText("likes");
                     break;
+                case 4:
+                    tab.setText("Degree of Separation");
+                    break;
             }
         }))).attach();
+
+        
 
     }
 }
