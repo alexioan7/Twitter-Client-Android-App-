@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+
 
 import tweepy
 import numpy as np
@@ -11,10 +11,9 @@ import queue
 from collections import deque
 
 
-# ACCESS_TOKEN = '2766268384-MgMIRFSKHKC87kAI67Yb8znhUpzVypYl6vyiltu'
-# ACCESS_SECRET = '5QeA8xpez3EVnEkQLx2no57KMasvGwVhFAGqiSD6oATLw'
-consumer_key = 'X49WPfKJ3lJixxzCVB8KuJK7z'
-consumer_secret = 'bqbzunS3mKqNMQCnnlv5e2T5RkLmw9Ckzs2XFWeBODSWXU49yC'
+
+consumer_key = 'Place your consumer key here'
+consumer_secret = 'Place your consumer secret key here'
 
 
 class Frontier():
