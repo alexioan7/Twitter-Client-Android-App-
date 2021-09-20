@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">MyTwitterLogin</string>
-    <string name="twitter_consumer_key" translatable="false">X49WPfKJ3lJixxzCVB8KuJK7z</string>
-    <string name="twitter_consumer_secret" translatable="false">bqbzunS3mKqNMQCnnlv5e2T5RkLmw9Ckzs2XFWeBODSWXU49yC</string>
+    <string name="twitter_consumer_key" translatable="false">Place your consumer key here</string>
+    <string name="twitter_consumer_secret" translatable="false">Place your consumer secret key here</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
