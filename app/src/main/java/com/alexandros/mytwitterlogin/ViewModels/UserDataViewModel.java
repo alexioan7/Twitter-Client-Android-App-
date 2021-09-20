@@ -31,9 +31,6 @@ public class UserDataViewModel extends ViewModel {
         repository.getHomeTimeline();
         repository.getLikes();
 
-
-
-
     }
 
 
