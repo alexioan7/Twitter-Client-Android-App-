@@ -12,8 +12,8 @@ from collections import deque
 
 
 
-consumer_key = 'Place your consumer key here'
-consumer_secret = 'Place your consumer secret key here'
+consumer_key = 'X49WPfKJ3lJixxzCVB8KuJK7z'
+consumer_secret = 'bqbzunS3mKqNMQCnnlv5e2T5RkLmw9Ckzs2XFWeBODSWXU49yC'
 
 
 class Frontier():
@@ -161,7 +161,7 @@ def main (source,destination,access_token, access_token_secret):
             # The man in the middle!
             m = src_frontier.perimeter.intersection(dest_frontier.perimeter).pop()
 
-            separation = src_frontier.get_distance(m) + dest_frontier.get_distance(m) - 1
+            separation = src_frontier.get_distance(m) + dest_frontier.get_distance(m)
 
 
 
